@@ -2,9 +2,11 @@ from pathlib import Path
 
 from benchmark.task_loader import load_tasks
 
+TASK_FILE = Path(__file__).parent.parent / "data/tasks/benchmark_tasks.json"
+
 
 def test_load_tasks_returns_named_benchmark_tasks() -> None:
-    tasks = load_tasks(Path("Projects/openclaw-model-arena/data/tasks/benchmark_tasks.json"))
+    tasks = load_tasks(TASK_FILE)
 
     assert len(tasks) >= 6
     assert len({task.task_id for task in tasks}) == len(tasks)

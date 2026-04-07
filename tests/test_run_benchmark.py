@@ -33,8 +33,8 @@ def test_build_run_matrix_creates_concrete_runtime_prompts_and_fixtures(
     (workspace_root / "SOUL.md").write_text("soul")
     (workspace_root / "USER.md").write_text("user")
     (workspace_root / "MEMORY.md").write_text("memory")
-    (workspace_root / "memory" / "2026-04-05.md").write_text("today")
-    (workspace_root / "memory" / "2026-04-04.md").write_text("yesterday")
+    (workspace_root / "memory" / "2026-04-07.md").write_text("today")
+    (workspace_root / "memory" / "2026-04-06.md").write_text("yesterday")
 
     tasks = [
         _task(
@@ -87,7 +87,7 @@ def test_build_run_matrix_creates_concrete_runtime_prompts_and_fixtures(
 
     startup_run = next(item for item in matrix if item["task_id"] == "startup-001")
     assert str(workspace_root / "SOUL.md") in startup_run["prompt"]
-    assert str(workspace_root / "memory" / "2026-04-05.md") in startup_run["prompt"]
+    assert str(workspace_root / "memory" / "2026-04-07.md") in startup_run["prompt"]
     assert startup_run["task_prompt_template"].startswith("A new session was started")
 
     tool_run = next(item for item in matrix if item["task_id"] == "tool-001")

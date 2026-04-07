@@ -4,6 +4,9 @@ import PretextStageCanvas from './components/PretextStageCanvas.vue'
 import { loadSiteData } from './data/loadSiteData'
 import { createArenaStory } from './presentation/createArenaStory'
 import type { SiteData } from './types'
+import LeaderboardPage from './components/pages/LeaderboardPage.vue'
+
+const currentPage = ref<'home' | 'leaderboard'>('home')
 
 const EMPTY_SITE_DATA: SiteData = {
   generatedAt: null,
@@ -73,15 +76,17 @@ onUnmounted(() => {
     <header class="arena-nav" id="top-nav" ref="nav">
       <a class="nav-brand" href="#hero"><span>OMA</span></a>
       <nav class="nav-links">
-        <a href="#ranking">Ranking</a>
-        <a href="#tasks">Tasks</a>
-        <a href="#failures">Failures</a>
-        <a href="#evidence">Evidence</a>
+        <a href="#ranking" @click.prevent="currentPage = 'home'">Ranking</a>
+        <a href="#tasks" @click.prevent="currentPage = 'home'">Tasks</a>
+        <a href="#failures" @click.prevent="currentPage = 'home'">Failures</a>
+        <a href="#evidence" @click.prevent="currentPage = 'home'">Evidence</a>
+        <a href="#" @click.prevent="currentPage = 'leaderboard'">Leaderboard</a>
       </nav>
     </header>
 
     <main>
-      <!-- Hero -->
+      <LeaderboardPage v-if="currentPage === 'leaderboard'" />
+
       <section id="hero" class="hero-section">
         <div class="hero-canvas-wrap">
           <PretextStageCanvas :stage="story.hero.stage" />

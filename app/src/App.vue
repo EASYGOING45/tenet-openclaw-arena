@@ -74,23 +74,25 @@ onUnmounted(() => {
   <div class="arena-page page-enter">
     <!-- Nav -->
     <header class="arena-nav" id="top-nav" ref="nav">
-      <a class="nav-brand" href="#hero"><span>OMA</span></a>
+      <a class="nav-brand" href="#hero"><span>ARENA</span></a>
       <nav class="nav-links">
-        <a href="#ranking" @click.prevent="currentPage = 'home'">Ranking</a>
-        <a href="#tasks" @click.prevent="currentPage = 'home'">Tasks</a>
-        <a href="#failures" @click.prevent="currentPage = 'home'">Failures</a>
-        <a href="#evidence" @click.prevent="currentPage = 'home'">Evidence</a>
-        <a href="#" @click.prevent="currentPage = 'leaderboard'">Leaderboard</a>
+        <a href="#ranking" @click.prevent="currentPage = 'home'">排位</a>
+        <a href="#tasks" @click.prevent="currentPage = 'home'">任务</a>
+        <a href="#failures" @click.prevent="currentPage = 'home'">风险</a>
+        <a href="#evidence" @click.prevent="currentPage = 'home'">记录</a>
+        <a href="#" @click.prevent="currentPage = 'leaderboard'">数据表</a>
       </nav>
     </header>
 
     <main>
+      <!-- Global ambient particles -->
+      <div class="ambient-canvas" aria-hidden="true">
+        <PretextStageCanvas :stage="story.hero.stage" />
+      </div>
+
       <LeaderboardPage v-if="currentPage === 'leaderboard'" />
 
       <section id="hero" class="hero-section">
-        <div class="hero-canvas-wrap">
-          <PretextStageCanvas :stage="story.hero.stage" />
-        </div>
         <div class="hero-content">
           <p class="hero-kicker">{{ story.hero.kicker }}</p>
           <h1 class="hero-headline">{{ story.hero.headline }}</h1>
@@ -115,8 +117,8 @@ onUnmounted(() => {
       <!-- Ranking Acts -->
       <section id="ranking" class="ranking-section section-gap">
         <div class="container">
-          <div class="section-heading">
-            <p class="section-tag">Ranking Acts</p>
+          <div class="section-heading section-heading--row">
+            <span class="section-heading-label">排位</span>
             <h2 class="section-title">{{ story.rankingSectionTitle }}</h2>
           </div>
           <div class="ranking-acts">
@@ -144,8 +146,8 @@ onUnmounted(() => {
       <!-- Task Focus -->
       <section id="tasks" class="tasks-section section-gap">
         <div class="container">
-          <div class="section-heading">
-            <p class="section-tag">Task Focus</p>
+          <div class="section-heading section-heading--row">
+            <span class="section-heading-label">任务</span>
             <h2 class="section-title">{{ story.taskSectionTitle }}</h2>
           </div>
           <div class="task-focus-grid">
@@ -167,8 +169,8 @@ onUnmounted(() => {
       <!-- Failure Dossier -->
       <section id="failures" class="failures-section section-gap">
         <div class="container">
-          <div class="section-heading">
-            <p class="section-tag">Failure Dossier</p>
+          <div class="section-heading section-heading--row">
+            <span class="section-heading-label">风险</span>
             <h2 class="section-title">{{ story.failureSectionTitle }}</h2>
           </div>
           <div class="failure-list">
@@ -187,8 +189,8 @@ onUnmounted(() => {
       <!-- Evidence Rail -->
       <section id="evidence" class="evidence-section section-gap">
         <div class="container">
-          <div class="section-heading">
-            <p class="section-tag">Evidence Rail</p>
+          <div class="section-heading section-heading--row">
+            <span class="section-heading-label">记录</span>
             <h2 class="section-title">{{ story.evidenceSectionTitle }}</h2>
           </div>
           <div class="evidence-rail">

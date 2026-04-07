@@ -1,0 +1,68 @@
+# tool-chain-003: exec → parse → write 完整数据处理链
+task_id: tool-chain-003
+schema_version: 1
+title: 执行命令解析输出并写入文件的完整数据处理链
+
+capability: tool_chain
+difficulty: medium
+
+tags:
+  - tool_chain
+  - exec
+  - parse
+  - write
+
+prompt:
+  system: |
+    You are an expert assistant running inside OpenClaw.
+  user: |
+    请执行 `ls -la Projects/openclaw-model-arena/app/src/` 获取文件列表，
+    过滤出所有 `.vue` 文件，
+    然后把文件名写入 `output/vue-files.txt`。
+
+reference:
+  correct_sequence:
+    - step: 1
+      type: exec_command
+      command_matcher: "ls.*vue"
+      reason: "执行 ls 获取文件列表"
+    - step: 2
+      type: reasoning_output
+      condition: filtered == true
+      reason: "过滤出 .vue 文件"
+    - step: 3
+      type: tool_call
+      tool: write
+      reason: "将结果写入文件"
+
+  forbidden:
+    - type: exec_without_parse
+      reason: "不应该只执行命令不处理结果"
+
+evaluation:
+  type: behavior_trace
+  timeout_seconds: 30
+
+  trace:
+    events:
+      - exec_command
+      - reasoning_output
+      - tool_call
+
+  scoring:
+    rules:
+      - event: exec_command
+        score: +30
+        note: "执行了 ls 命令"
+      - event: reasoning_output
+        score: +30
+        note: "过滤了 .vue 文件"
+      - event: tool_call
+        condition: tool == "write"
+        score: +30
+        note: "写入结果文件"
+    min_score: 0
+    max_score: 100
+
+  pass_threshold: 70
+  fail_threshold: 40

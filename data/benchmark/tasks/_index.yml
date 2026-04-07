@@ -1,0 +1,179 @@
+# OpenClaw Capability Benchmark — Task Registry
+# Version: 1
+# Schema: benchmark/tasks/_schema.yml
+
+registry_version: 1
+total_tasks: 18
+schema_version: 1
+
+dimensions:
+  - id: skill_dispatch
+    name: Skill Dispatch
+    description: 能否在正确时机调用正确的 skill
+    weight: 0.15
+    task_count: 4
+
+  - id: tool_chain
+    name: Tool Chain
+    description: 工具调用顺序、参数质量、错误处理
+    weight: 0.25
+    task_count: 4
+
+  - id: cli_competence
+    name: CLI Competence
+    description: bash/git/npm/wrangler 等命令行操作
+    weight: 0.15
+    task_count: 3
+
+  - id: computer_use
+    name: Computer Use
+    description: 浏览器自动化、截图、UI 操作
+    weight: 0.15
+    task_count: 2
+
+  - id: self_correction
+    name: Self-Correction
+    description: 失败后分析日志并自主修复
+    weight: 0.15
+    task_count: 3
+
+  - id: delegation
+    name: Delegation
+    description: 多任务并行调度与结果聚合
+    weight: 0.15
+    task_count: 2
+
+difficulty_levels:
+  - id: easy
+    description: 单步操作，无复杂依赖
+  - id: medium
+    description: 多步骤，有一定依赖关系
+  - id: hard
+    description: 多步骤有依赖，或需要并行协调
+
+tasks:
+  - task_id: skill-dispatch-001
+    title: 需求分析阶段正确调用 brainstorming skill
+    yaml_path: skill_dispatch/skill-dispatch-001.yml
+    capability: skill_dispatch
+    difficulty: medium
+    is_active: true
+
+  - task_id: skill-dispatch-002
+    title: Bug报告后正确调用 debugging skill 而非直接修复
+    yaml_path: skill_dispatch/skill-dispatch-002.yml
+    capability: skill_dispatch
+    difficulty: easy
+    is_active: true
+
+  - task_id: skill-dispatch-003
+    title: 需求明确后正确调用 frontend-design 进行设计
+    yaml_path: skill_dispatch/skill-dispatch-003.yml
+    capability: skill_dispatch
+    difficulty: medium
+    is_active: true
+
+  - task_id: skill-dispatch-004
+    title: 任务完成后正确调用 verification skill 进行验收
+    yaml_path: skill_dispatch/skill-dispatch-004.yml
+    capability: skill_dispatch
+    difficulty: medium
+    is_active: true
+
+  - task_id: tool-chain-001
+    title: 先读取文件，理解内容、修改、验证的完整工具链
+    yaml_path: tool_chain/tool-chain-001.yml
+    capability: tool_chain
+    difficulty: medium
+    is_active: true
+
+  - task_id: tool-chain-002
+    title: 信息搜索后正确处理多个URL的完整链路
+    yaml_path: tool_chain/tool-chain-002.yml
+    capability: tool_chain
+    difficulty: medium
+    is_active: true
+
+  - task_id: tool-chain-003
+    title: 执行命令解析输出并写入文件的完整数据处理链
+    yaml_path: tool_chain/tool-chain-003.yml
+    capability: tool_chain
+    difficulty: medium
+    is_active: true
+
+  - task_id: tool-chain-004
+    title: 读取多个文件对比差异并输出对比报告
+    yaml_path: tool_chain/tool-chain-004.yml
+    capability: tool_chain
+    difficulty: medium
+    is_active: true
+
+  - task_id: cli-001
+    title: 完整的 Git 提交流程
+    yaml_path: cli_competence/cli-001.yml
+    capability: cli_competence
+    difficulty: medium
+    is_active: true
+
+  - task_id: cli-002
+    title: 完整的 Cloudflare Wrangler 部署流程
+    yaml_path: cli_competence/cli-002.yml
+    capability: cli_competence
+    difficulty: hard
+    is_active: true
+
+  - task_id: cli-003
+    title: 正确的依赖安装和版本验证流程
+    yaml_path: cli_competence/cli-003.yml
+    capability: cli_competence
+    difficulty: easy
+    is_active: true
+
+  - task_id: computer-001
+    title: 用 Playwright 自动化打开网页并截图验证
+    yaml_path: computer_use/computer-001.yml
+    capability: computer_use
+    difficulty: hard
+    is_active: true
+
+  - task_id: computer-002
+    title: 在多个相关网页间导航并提取整合信息
+    yaml_path: computer_use/computer-002.yml
+    capability: computer_use
+    difficulty: hard
+    is_active: true
+
+  - task_id: self-correction-001
+    title: 命令执行失败后分析错误并正确重试
+    yaml_path: self_correction/self-correction-001.yml
+    capability: self_correction
+    difficulty: medium
+    is_active: true
+
+  - task_id: self-correction-002
+    title: 路径错误后能自动找到正确路径并继续执行
+    yaml_path: self_correction/self-correction-002.yml
+    capability: self_correction
+    difficulty: medium
+    is_active: true
+
+  - task_id: self-correction-003
+    title: API 超时后能分析原因并制定重试策略
+    yaml_path: self_correction/self-correction-003.yml
+    capability: self_correction
+    difficulty: hard
+    is_active: true
+
+  - task_id: delegation-001
+    title: 正确使用 sessions_spawn 并行调度多个子任务
+    yaml_path: delegation/delegation-001.yml
+    capability: delegation
+    difficulty: hard
+    is_active: true
+
+  - task_id: delegation-002
+    title: 串行依赖的多步骤任务正确分解并用 subagent 执行
+    yaml_path: delegation/delegation-002.yml
+    capability: delegation
+    difficulty: hard
+    is_active: true

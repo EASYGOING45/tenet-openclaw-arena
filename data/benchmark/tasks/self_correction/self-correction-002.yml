@@ -1,0 +1,78 @@
+# self-correction-002: 文件不存在时的路径恢复
+task_id: self-correction-002
+schema_version: 1
+title: 路径错误后能自动找到正确路径并继续执行
+
+capability: self_correction
+difficulty: medium
+
+tags:
+  - self_correction
+  - path_recovery
+  - error_handling
+
+prompt:
+  system: |
+    You are an expert assistant running inside OpenClaw.
+  user: |
+    请读取 `Projects/openclaw-model-arena/docs/README.md` 文件。
+
+context:
+  workspace_hints:
+    - "文件可能不存在（也许路径不对）"
+    - "应该先搜索确认路径再读取"
+
+reference:
+  correct_sequence:
+    - step: 1
+      type: tool_call
+      tool: read
+      condition: path_correct == true
+      reason: "路径正确，直接读取"
+    - step: 2
+      type: error_occurred
+      reason: "路径错误"
+    - step: 3
+      type: path_search
+      reason: "搜索确认正确路径"
+    - step: 4
+      type: retry_tool_call
+      reason: "用正确路径重试"
+
+  forbidden:
+    - type: give_up_on_not_found
+      reason: "文件不存在就直接放弃"
+
+evaluation:
+  type: behavior_trace
+  timeout_seconds: 30
+
+  trace:
+    events:
+      - tool_call
+      - error_occurred
+      - path_recovered
+      - retry_tool_call
+
+  scoring:
+    rules:
+      - event: tool_call
+        score: +10
+        note: "尝试读取"
+      - event: error_occurred
+        score: +0
+        note: "遇到错误（预期）"
+      - event: path_recovered
+        score: +40
+        note: "找到正确路径"
+      - event: retry_tool_call
+        score: +40
+        note: "重试并成功"
+      - event: give_up_on_not_found
+        score: -30
+        note: "直接放弃"
+    min_score: 0
+    max_score: 100
+
+  pass_threshold: 60
+  fail_threshold: 30

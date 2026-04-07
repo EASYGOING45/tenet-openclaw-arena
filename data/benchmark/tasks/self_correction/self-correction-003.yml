@@ -1,0 +1,77 @@
+# self-correction-003: API 超时后的重试策略
+task_id: self-correction-003
+schema_version: 1
+title: API 超时后能分析原因并制定重试策略
+
+capability: self_correction
+difficulty: hard
+
+tags:
+  - self_correction
+  - api_retry
+  - timeout_handling
+
+prompt:
+  system: |
+    You are an expert assistant running inside OpenClaw.
+  user: |
+    请尝试调用 GitHub API 获取 openclaw/openclaw 仓库的信息。
+    如果遇到超时或其他错误，请分析原因并尝试修复。
+
+context:
+  workspace_hints:
+    - "直接 curl 可能遇到超时"
+    - "需要分析错误类型（超时/401/403/网络问题）"
+
+reference:
+  correct_sequence:
+    - step: 1
+      type: exec_command
+      command_matcher: "curl|wget|gh api"
+      reason: "尝试调用 API"
+    - step: 2
+      type: error_analyzed
+      reason: "分析错误类型"
+    - step: 3
+      type: retry_strategy
+      reason: "制定重试策略（如添加 token/缩短超时/用 gh cli）"
+
+  forbidden:
+    - type: ignore_api_error
+      reason: "遇到 API 错误不能直接忽略"
+    - type: no_diagnostic
+      reason: "不分析原因就直接放弃"
+
+evaluation:
+  type: behavior_trace
+  timeout_seconds: 60
+
+  trace:
+    events:
+      - exec_command
+      - error_occurred
+      - error_analyzed
+      - retry_strategy
+
+  scoring:
+    rules:
+      - event: exec_command
+        score: +10
+        note: "执行了 API 调用"
+      - event: error_occurred
+        score: +0
+        note: "出现错误（预期）"
+      - event: error_analyzed
+        score: +40
+        note: "分析了错误原因"
+      - event: retry_strategy
+        score: +40
+        note: "制定了重试策略并执行"
+      - event: ignore_api_error
+        score: -50
+        note: "忽略错误不处理"
+    min_score: 0
+    max_score: 100
+
+  pass_threshold: 60
+  fail_threshold: 30

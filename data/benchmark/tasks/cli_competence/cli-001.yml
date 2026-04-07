@@ -1,0 +1,83 @@
+# cli-001: git add/commit/push 完整工作流
+task_id: cli-001
+schema_version: 1
+title: 完整的 Git 提交流程
+
+capability: cli_competence
+difficulty: medium
+
+tags:
+  - cli_competence
+  - git
+  - commit
+  - workflow
+
+prompt:
+  system: |
+    You are an expert assistant running inside OpenClaw.
+  user: |
+    请检查 `Projects/openclaw-model-arena` 目录下是否有未提交的更改，
+    如果有，请执行完整的 git add → commit → push 流程。
+    Commit message 应该简洁描述本次更改内容。
+
+reference:
+  correct_sequence:
+    - step: 1
+      type: exec_command
+      command_matcher: "git status"
+      reason: "先查看当前 git 状态"
+    - step: 2
+      type: exec_command
+      command_matcher: "git add"
+      reason: "暂存更改"
+    - step: 3
+      type: exec_command
+      command_matcher: "git commit"
+      reason: "提交"
+    - step: 4
+      type: exec_command
+      command_matcher: "git push"
+      reason: "推送到远程"
+      optional: true
+
+  forbidden:
+    - type: git_add_all_without_check
+      reason: "不应该直接 git add -A 而不先确认状态"
+    - type: commit_with_invalid_message
+      reason: "commit message 不应该为空或无意义"
+
+evaluation:
+  type: behavior_trace
+  timeout_seconds: 60
+
+  trace:
+    events:
+      - exec_command
+      - git_status_checked
+      - git_add_performed
+      - git_commit_done
+      - git_push_done
+
+  scoring:
+    rules:
+      - event: exec_command
+        condition: '"git status" in command'
+        score: +20
+        note: "先检查状态"
+      - event: git_add_performed
+        score: +30
+        note: "执行了 git add"
+      - event: git_commit_done
+        score: +30
+        note: "执行了 git commit"
+      - event: git_push_done
+        score: +10
+        note: "推送到远程"
+      - event: git_add_all_without_check
+        score: -20
+        note: "不检查状态直接 add"
+    min_score: 0
+    max_score: 100
+
+  pass_threshold: 70
+  fail_threshold: 40

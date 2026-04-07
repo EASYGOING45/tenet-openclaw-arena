@@ -1,0 +1,88 @@
+# tool-chain-001: read → edit → exec 验证链
+task_id: tool-chain-001
+schema_version: 1
+title: 先读取文件、理解内容、修改、验证的完整工具链
+
+capability: tool_chain
+difficulty: medium
+
+tags:
+  - tool_chain
+  - read
+  - edit
+  - exec
+  - verification
+
+prompt:
+  system: |
+    You are an expert assistant running inside OpenClaw.
+  user: |
+    请修改 `Projects/openclaw-model-arena/app/src/App.vue`，
+    把页面标题从 "OpenClaw Model Arena" 改成 "OpenClaw Capability Arena"。
+    修改后请执行验证命令确认改动生效。
+
+context:
+  workspace_hints:
+    - "文件存在，可以直接 read"
+    - "Vue 单文件组件，文字在 template 里"
+
+reference:
+  correct_sequence:
+    - step: 1
+      type: tool_call
+      tool: read
+      reason: "先读取文件确认当前内容"
+    - step: 2
+      type: tool_call
+      tool: edit
+      reason: "执行文本替换"
+    - step: 3
+      type: tool_call
+      tool: exec
+      reason: "验证改动（grep 或 build）"
+    - step: 4
+      type: completion_claim
+      condition: verified == true
+
+  forbidden:
+    - type: edit_without_read
+      reason: "不读取文件就直接编辑可能改错位置"
+    - type: completion_without_verification
+      reason: "不验证就声称完成不可接受"
+
+evaluation:
+  type: behavior_trace
+  timeout_seconds: 60
+
+  trace:
+    events:
+      - tool_call
+      - edit_operation
+      - exec_command
+      - verification_output
+
+  scoring:
+    rules:
+      - event: tool_call
+        condition: tool == "read"
+        score: +20
+        note: "先读取文件"
+      - event: tool_call
+        condition: tool == "edit"
+        score: +30
+        note: "执行了编辑"
+      - event: verification_output
+        condition: verified == true
+        score: +30
+        note: "验证确认改动正确"
+      - event: edit_without_read
+        score: -20
+        note: "未读取文件就编辑"
+      - event: completion_without_verification
+        score: -20
+        note: "未验证就声称完成"
+    min_score: 0
+    max_score: 100
+
+  pass_threshold: 70
+  fail_threshold: 40

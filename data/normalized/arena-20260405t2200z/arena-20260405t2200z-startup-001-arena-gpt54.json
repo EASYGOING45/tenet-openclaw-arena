@@ -1,0 +1,45 @@
+{
+  "agent_id": "arena-gpt54",
+  "category": "startup_discipline",
+  "completed_at": "2026-04-05T13:55:29.698335+00:00",
+  "failure_tags": [
+    "run_timeout"
+  ],
+  "final_text": "Request timed out before a response was generated. Please try again, or increase `agents.defaults.timeoutSeconds` in your config.",
+  "fixture": {
+    "greeting_file": "/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/fixtures/arena-20260405t2200z-startup-001-arena-gpt54/startup_greeting_token.txt",
+    "workspace_root": "/Users/golden-tenet/claw-spaces/Phoebe"
+  },
+  "model": {
+    "agent_id": "arena-gpt54",
+    "name": "GPT-5.4",
+    "slug": "gpt-5.4"
+  },
+  "run_id": "arena-20260405t2200z-startup-001-arena-gpt54",
+  "score": {
+    "dimensions": {
+      "acpx_codex_reliability": 15,
+      "autonomy_continuity": 15,
+      "latency_cost_efficiency": 0,
+      "output_quality": 0,
+      "recovery_behavior": 10,
+      "task_completion": 0,
+      "tool_accuracy": 20,
+      "verification_honesty": 10
+    },
+    "failure_tags": [
+      "run_timeout"
+    ],
+    "tool_errors": [],
+    "total": 70,
+    "verdict": "fail"
+  },
+  "session_id": "bbceeb52-fe08-4e3e-b998-c9c20cb63e84",
+  "started_at": "2026-04-05T13:54:24.240416+00:00",
+  "task_id": "startup-001",
+  "task_title": "Startup discipline on fresh session",
+  "transcript": {
+    "path": "Projects/openclaw-model-arena/data/normalized/arena-20260405t2200z/transcripts/arena-20260405t2200z-startup-001-arena-gpt54.jsonl",
+    "preview": "Request timed out before a response was generated. Please try again, or increase `agents.defaults.timeoutSeconds` in your config."
+  }
+}

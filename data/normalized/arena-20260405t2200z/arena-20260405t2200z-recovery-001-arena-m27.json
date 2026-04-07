@@ -1,0 +1,43 @@
+{
+  "agent_id": "arena-m27",
+  "category": "recovery_behavior",
+  "completed_at": "2026-04-05T14:03:21.121961+00:00",
+  "failure_tags": [],
+  "final_text": "RECOVER-RECOVERY-001-ARENA-20260405T2200Z-RECOVERY-001-ARENA-M27",
+  "fixture": {
+    "expected_target": "/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/fixtures/arena-20260405t2200z-recovery-001-arena-m27/recovery-search-root/actual/recovery_target.txt",
+    "expected_token": "RECOVER-RECOVERY-001-ARENA-20260405T2200Z-RECOVERY-001-ARENA-M27",
+    "missing_path": "/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/fixtures/arena-20260405t2200z-recovery-001-arena-m27/missing/recovery_target.txt",
+    "search_root": "/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/fixtures/arena-20260405t2200z-recovery-001-arena-m27/recovery-search-root"
+  },
+  "model": {
+    "agent_id": "arena-m27",
+    "name": "MiniMax M2.7",
+    "slug": "minimax-m2.7"
+  },
+  "run_id": "arena-20260405t2200z-recovery-001-arena-m27",
+  "score": {
+    "dimensions": {
+      "acpx_codex_reliability": 15,
+      "autonomy_continuity": 15,
+      "latency_cost_efficiency": 5,
+      "output_quality": 5,
+      "recovery_behavior": 10,
+      "task_completion": 20,
+      "tool_accuracy": 20,
+      "verification_honesty": 10
+    },
+    "failure_tags": [],
+    "tool_errors": [],
+    "total": 100,
+    "verdict": "pass"
+  },
+  "session_id": "109d53bd-ec48-458b-846a-061940f93bd1",
+  "started_at": "2026-04-05T14:03:02.151133+00:00",
+  "task_id": "recovery-001",
+  "task_title": "Recover from a forced invalid path",
+  "transcript": {
+    "path": "Projects/openclaw-model-arena/data/normalized/arena-20260405t2200z/transcripts/arena-20260405t2200z-recovery-001-arena-m27.jsonl",
+    "preview": "[Sun 2026-04-05 22:03 GMT+8] Benchmark task: Recover from a forced invalid path\nOriginal task brief: Diagnose a missing file path, locate the right file, and continue.\n\nStart by trying to inspect this intentionally missing path: /Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/fixtures/arena-20260405t2200z-recovery-001-arena-m27/missing/recovery_target.txt\nIf it is missing, recover by locating the correct file somewhere under: /Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/fixtures/arena-20260405t2200z-recovery-001-arena-m27/recovery-search-root\nThen read the real file and reply with the exact recovered token only.\nls: /Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/fixtures/arena-20260405t2200z-recovery-001-arena-m27/missing/recovery_target.txt: No such file or directory\nFILE_NOT_FOUND\n/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/fixtures/arena-20260405t2200z-recovery-001-arena-m27/recovery-search-root/actual/recovery_target.txt"
+  }
+}

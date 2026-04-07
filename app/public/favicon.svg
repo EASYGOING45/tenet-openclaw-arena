@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="OMA favicon">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#08111d" />
+      <stop offset="100%" stop-color="#04060b" />
+    </linearGradient>
+    <linearGradient id="beam" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#38f6ff" />
+      <stop offset="100%" stop-color="#ffb53d" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="10" fill="url(#bg)" />
+  <rect x="30" y="8" width="4" height="48" fill="url(#beam)" />
+  <text x="10" y="26" fill="#38f6ff" font-family="Bebas Neue, Oswald, sans-serif" font-size="18" font-weight="700">O</text>
+  <text x="10" y="46" fill="#ffb53d" font-family="Bebas Neue, Oswald, sans-serif" font-size="18" font-weight="700">M</text>
+  <text x="42" y="56" fill="#f7f3eb" font-family="Bebas Neue, Oswald, sans-serif" font-size="18" font-weight="700">A</text>
+</svg>

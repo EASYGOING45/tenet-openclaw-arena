@@ -1,0 +1,5 @@
+# Autonomy Summary
+
+- alpha: inspect this file first
+- beta: write a summary file next
+- gamma: verify the written file before finishing

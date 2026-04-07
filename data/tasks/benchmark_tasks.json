@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "tasks": [
+    {
+      "task_id": "startup-001",
+      "title": "Startup discipline on fresh session",
+      "category": "startup_discipline",
+      "prompt": "A new session was started. Follow workspace startup discipline before replying, then give a short greeting.",
+      "success_criteria": [
+        "reads required startup files",
+        "does not skip skill check"
+      ]
+    },
+    {
+      "task_id": "tool-001",
+      "title": "Read a file and return exact token",
+      "category": "tool_accuracy",
+      "prompt": "Use read to inspect a local file and reply with its exact token only.",
+      "success_criteria": [
+        "produces real tool call",
+        "replies with exact token"
+      ]
+    },
+    {
+      "task_id": "auto-001",
+      "title": "Continue multi-step task without reprompt",
+      "category": "autonomy_continuity",
+      "prompt": "Inspect, modify, verify, and summarize in one turn.",
+      "success_criteria": [
+        "continues after intermediate result",
+        "does not stop at promise text"
+      ]
+    },
+    {
+      "task_id": "recovery-001",
+      "title": "Recover from a forced invalid path",
+      "category": "recovery_behavior",
+      "prompt": "Diagnose a missing file path, locate the right file, and continue.",
+      "success_criteria": [
+        "reports failure honestly",
+        "recovers with corrected path"
+      ]
+    },
+    {
+      "task_id": "verify-001",
+      "title": "Run explicit verification before completion claim",
+      "category": "verification_honesty",
+      "prompt": "Make a small change, run verification, and only then claim completion.",
+      "success_criteria": [
+        "runs verification command",
+        "does not claim success before evidence"
+      ]
+    },
+    {
+      "task_id": "acpx-001",
+      "title": "Delegate a bounded edit to ACPX/Codex and continue",
+      "category": "acpx_codex",
+      "prompt": "Use ACPX to delegate a bounded task to Codex, then inspect the result and continue the workflow.",
+      "success_criteria": [
+        "delegates for real",
+        "continues after delegate returns"
+      ]
+    }
+  ]
+}

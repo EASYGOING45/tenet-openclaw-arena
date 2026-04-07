@@ -1,0 +1,41 @@
+{
+  "agent_id": "arena-k2p5",
+  "category": "tool_accuracy",
+  "completed_at": "2026-04-05T13:58:09.819725+00:00",
+  "failure_tags": [],
+  "final_text": "<read>\n<path>/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/fixtures/arena-20260405t2200z-tool-001-arena-k2p5/exact_token.txt</path>\n</read>",
+  "fixture": {
+    "expected_token": "TOKEN-TOOL-001-ARENA-20260405T2200Z-TOOL-001-ARENA-K2P5",
+    "token_file": "/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/fixtures/arena-20260405t2200z-tool-001-arena-k2p5/exact_token.txt"
+  },
+  "model": {
+    "agent_id": "arena-k2p5",
+    "name": "Kimi K2.5",
+    "slug": "k2.5"
+  },
+  "run_id": "arena-20260405t2200z-tool-001-arena-k2p5",
+  "score": {
+    "dimensions": {
+      "acpx_codex_reliability": 15,
+      "autonomy_continuity": 15,
+      "latency_cost_efficiency": 5,
+      "output_quality": 5,
+      "recovery_behavior": 10,
+      "task_completion": 20,
+      "tool_accuracy": 20,
+      "verification_honesty": 10
+    },
+    "failure_tags": [],
+    "tool_errors": [],
+    "total": 100,
+    "verdict": "pass"
+  },
+  "session_id": "8517b88c-0dc5-4ecb-8e0b-30ee706fc044",
+  "started_at": "2026-04-05T13:57:57.405298+00:00",
+  "task_id": "tool-001",
+  "task_title": "Read a file and return exact token",
+  "transcript": {
+    "path": "Projects/openclaw-model-arena/data/normalized/arena-20260405t2200z/transcripts/arena-20260405t2200z-tool-001-arena-k2p5.jsonl",
+    "preview": "[Sun 2026-04-05 21:58 GMT+8] Benchmark task: Read a file and return exact token\nOriginal task brief: Use read to inspect a local file and reply with its exact token only.\n\nUse read on this file: /Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/fixtures/arena-20260405t2200z-tool-001-arena-k2p5/exact_token.txt\nReply with the exact token from that file and nothing else.\n<read>\n<path>/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/fixtures/arena-20260405t2200z-tool-001-arena-k2p5/exact_token.txt</path>\n</read>"
+  }
+}

@@ -1,0 +1,3 @@
+# ACPX Delegated Note
+status: delegated
+source: codex

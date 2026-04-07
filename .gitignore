@@ -1,0 +1,19 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+
+# Node
+node_modules/
+dist/
+*.local
+
+# Playwright
+.playwright-cli/
+
+# Temp
+.DS_Store
+*.swp
+uv.lock

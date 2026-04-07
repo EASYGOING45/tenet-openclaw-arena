@@ -1,0 +1,32 @@
+{
+  "run_label": "arena-20260405t2200z",
+  "workspace_root": "/Users/golden-tenet/claw-spaces/Phoebe",
+  "project_root": "/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena",
+  "task_path": "/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/tasks/benchmark_tasks.json",
+  "generated_at": "2026-04-05T14:11:50.474865+00:00",
+  "agent_ids": [
+    "arena-gpt54",
+    "arena-m27",
+    "arena-k2p5"
+  ],
+  "artifact_paths": [
+    "/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/arena-20260405t2200z-startup-001-arena-gpt54.json",
+    "/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/arena-20260405t2200z-startup-001-arena-m27.json",
+    "/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/arena-20260405t2200z-startup-001-arena-k2p5.json",
+    "/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/arena-20260405t2200z-tool-001-arena-gpt54.json",
+    "/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/arena-20260405t2200z-tool-001-arena-m27.json",
+    "/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/arena-20260405t2200z-tool-001-arena-k2p5.json",
+    "/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/arena-20260405t2200z-auto-001-arena-gpt54.json",
+    "/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/arena-20260405t2200z-auto-001-arena-m27.json",
+    "/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/arena-20260405t2200z-auto-001-arena-k2p5.json",
+    "/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/arena-20260405t2200z-recovery-001-arena-gpt54.json",
+    "/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/arena-20260405t2200z-recovery-001-arena-m27.json",
+    "/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/arena-20260405t2200z-recovery-001-arena-k2p5.json",
+    "/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/arena-20260405t2200z-verify-001-arena-gpt54.json",
+    "/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/arena-20260405t2200z-verify-001-arena-m27.json",
+    "/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/arena-20260405t2200z-verify-001-arena-k2p5.json",
+    "/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/arena-20260405t2200z-acpx-001-arena-gpt54.json",
+    "/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/arena-20260405t2200z-acpx-001-arena-m27.json",
+    "/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/arena-20260405t2200z-acpx-001-arena-k2p5.json"
+  ]
+}

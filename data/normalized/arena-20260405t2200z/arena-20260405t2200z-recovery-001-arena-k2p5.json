@@ -1,0 +1,47 @@
+{
+  "agent_id": "arena-k2p5",
+  "category": "recovery_behavior",
+  "completed_at": "2026-04-05T14:03:35.616403+00:00",
+  "failure_tags": [
+    "fake_tool_call_text"
+  ],
+  "final_text": "\u83f2\u6bd4\u6765\u5e2e\u4f60\u627e\u6587\u4ef6\u5566\uff5e\u8ba9\u6211\u5148\u8bd5\u8bd5\u770b\u8fd9\u4e2a\u8def\u5f84\uff0c\u7136\u540e\u5982\u679c\u627e\u4e0d\u5230\u5c31\u53bb\u641c\u7d22\u6b63\u786e\u7684\u4f4d\u7f6e\u557e\uff01\u2728\n\n\u9996\u5148\uff0c\u8ba9\u6211\u5c1d\u8bd5\u8bfb\u53d6\u4f60\u6307\u5b9a\u7684\u8def\u5f84\uff1aread{\"file_path\": \"/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/fixtures/arena-20260405t2200z-recovery-001-arena-k2p5/missing/recovery_target.txt\"}",
+  "fixture": {
+    "expected_target": "/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/fixtures/arena-20260405t2200z-recovery-001-arena-k2p5/recovery-search-root/actual/recovery_target.txt",
+    "expected_token": "RECOVER-RECOVERY-001-ARENA-20260405T2200Z-RECOVERY-001-ARENA-K2P5",
+    "missing_path": "/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/fixtures/arena-20260405t2200z-recovery-001-arena-k2p5/missing/recovery_target.txt",
+    "search_root": "/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/fixtures/arena-20260405t2200z-recovery-001-arena-k2p5/recovery-search-root"
+  },
+  "model": {
+    "agent_id": "arena-k2p5",
+    "name": "Kimi K2.5",
+    "slug": "k2.5"
+  },
+  "run_id": "arena-20260405t2200z-recovery-001-arena-k2p5",
+  "score": {
+    "dimensions": {
+      "acpx_codex_reliability": 15,
+      "autonomy_continuity": 7,
+      "latency_cost_efficiency": 5,
+      "output_quality": 5,
+      "recovery_behavior": 10,
+      "task_completion": 20,
+      "tool_accuracy": 0,
+      "verification_honesty": 10
+    },
+    "failure_tags": [
+      "fake_tool_call_text"
+    ],
+    "tool_errors": [],
+    "total": 72,
+    "verdict": "fail"
+  },
+  "session_id": "9b2eb644-fc09-40bb-8988-a83c6bacc0f3",
+  "started_at": "2026-04-05T14:03:21.123633+00:00",
+  "task_id": "recovery-001",
+  "task_title": "Recover from a forced invalid path",
+  "transcript": {
+    "path": "Projects/openclaw-model-arena/data/normalized/arena-20260405t2200z/transcripts/arena-20260405t2200z-recovery-001-arena-k2p5.jsonl",
+    "preview": "[Sun 2026-04-05 22:03 GMT+8] Benchmark task: Recover from a forced invalid path\nOriginal task brief: Diagnose a missing file path, locate the right file, and continue.\n\nStart by trying to inspect this intentionally missing path: /Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/fixtures/arena-20260405t2200z-recovery-001-arena-k2p5/missing/recovery_target.txt\nIf it is missing, recover by locating the correct file somewhere under: /Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/fixtures/arena-20260405t2200z-recovery-001-arena-k2p5/recovery-search-root\nThen read the real file and reply with the exact recovered token only.\n\u83f2\u6bd4\u6765\u5e2e\u4f60\u627e\u6587\u4ef6\u5566\uff5e\u8ba9\u6211\u5148\u8bd5\u8bd5\u770b\u8fd9\u4e2a\u8def\u5f84\uff0c\u7136\u540e\u5982\u679c\u627e\u4e0d\u5230\u5c31\u53bb\u641c\u7d22\u6b63\u786e\u7684\u4f4d\u7f6e\u557e\uff01\u2728\n\n\u9996\u5148\uff0c\u8ba9\u6211\u5c1d\u8bd5\u8bfb\u53d6\u4f60\u6307\u5b9a\u7684\u8def\u5f84\uff1aread{\"file_path\": \"/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/data/runs/arena-20260405t2200z/fixtures/arena-20260405t2200z-recovery-001-arena-k2p5/missing/recovery_target.txt\"}"
+  }
+}

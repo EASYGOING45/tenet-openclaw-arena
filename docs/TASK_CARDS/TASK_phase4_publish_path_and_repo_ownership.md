@@ -1,6 +1,6 @@
 # TASK_phase4_publish_path_and_repo_ownership - 发布路径与仓库归属决策
 
-**状态**：🟡待拍板
+**状态**：✅ 已拍板（2026-04-07）
 **创建时间**：2026-04-06 13:38
 **更新时间**：2026-04-07 07:01
 
@@ -46,10 +46,17 @@
 
 ## 验收标准
 
-- [ ] 明确 repo 归属决策
-- [ ] 明确发布目标
-- [ ] 新建对应执行任务卡（如部署 / CI / 发布文档）
-- [ ] 让统一执行链中的 gh / wrangler 验证对本项目真正生效
+- [x] 明确 repo 归属决策 → 新仓库 `https://github.com/EASYGOING45/tenet-openclaw-arena`
+- [x] 明确发布目标 → Cloudflare Pages
+- [ ] GitHub Actions CI 配置
+- [ ] 全量 benchmark 运行（18任务 × 3 agents）
+- [ ] 飞书文档：题库说明/评测方法/模型计划
+
+## 已完成记录
+
+- 2026-04-07：确定使用独立 repo `tenet-openclaw-arena` + Cloudflare Pages
+- 2026-04-07 11:57：首次 push 到 main 分支
+- 2026-04-07 12:16：提交 utility scripts（run_arena_m27.sh 等）
 
 ## 本次巡检记录
 

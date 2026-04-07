@@ -40,24 +40,37 @@
 ## 架构
 
 ```
-┌─────────────────────────────────────────────┐
-│  Python Benchmark Runner                     │
-│  ┌─────────────┐  ┌──────────┐  ┌────────┐ │
-│  │openclaw_runner│→│event_parser│→│ scorer │ │
-│  └─────────────┘  └──────────┘  └────────┘ │
-│         ↓              ↓             ↓     │
-│  subprocess.run()   12种事件类型   YAML规则   │
-│  openclaw agent    解析stdout    量化打分    │
-└─────────────────────────────────────────────┘
-         ↓
-┌─────────────────────────────────────────────┐
-│  Backend API（Hono + SQLite）               │
-│  GET /api/leaderboard                       │
-│  GET /api/results/:run_id                   │
-└─────────────────────────────────────────────┘
-         ↓
-┌─────────────────────────────────────────────┐
-│  Frontend（Vue 3 + Pretext 粒子动效）         │
+┌──────────────────────────────────────────────────────┐
+│  YAML 题库（唯一真源）                                  │
+│  data/benchmark/tasks/*.yml                         │
+│  18 个标准化任务，6 大能力维度                           │
+└──────────────────────────────────────────────────────┘
+                          ↓
+┌──────────────────────────────────────────────────────┐
+│  Python Benchmark Runner（parallel_runner.py）           │
+│  1. openclaw agent --json 执行任务                      │
+│  2. event_parser 解析行为事件（12种）                    │
+│  3. scorer 按 YAML 规则打分                             │
+│  4. 实时写入 SQLite（每次 result 完成后立即写入）           │
+│  5. 同时保存完整 JSON（output/benchmark_results/）         │
+└──────────────────────────────────────────────────────┘
+                          ↓
+┌──────────────────────────────────────────────────────┐
+│  SQLite 数据库（backend/arena.db）                       │
+│  agents 表  ← sync_tasks.py 从 YAML 同步               │
+│  tasks 表  ← OpenClaw agents 配置                      │
+│  runs 表   ← Benchmark runner 实时写入                   │
+└──────────────────────────────────────────────────────┘
+                          ↓
+┌──────────────────────────────────────────────────────┐
+│  Backend API（Hono + SQLite）                          │
+│  GET /api/leaderboard?run_group=&capability=          │
+│  GET /api/agents / GET /api/tasks                      │
+│  GET /api/results?agent_id=&task_id=&run_group=         │
+└──────────────────────────────────────────────────────┘
+                          ↓
+┌──────────────────────────────────────────────────────┐
+│  Frontend（Vue 3 + Pretext 粒子动效）                    │
 │  Home 页 + Leaderboard 多维排名              │
 └─────────────────────────────────────────────┘
 ```
@@ -73,7 +86,16 @@ cd app && npm install
 cd ../backend && npm install
 ```
 
-### 2. 跑 Benchmark（6 任务精简版 ≈ 10 分钟）
+### 2. 同步题库到 SQLite（首次 / 更新题库时）
+
+```bash
+python3 scripts/sync_tasks.py
+# 输出: Synced 3 agents and 18 tasks to backend/arena.db
+```
+
+### 3. 跑 Benchmark（6 任务精简版 ≈ 10 分钟）
+
+结果同时写入 SQLite（`backend/arena.db`）和 JSON 文件（`output/benchmark_results/`）：
 
 ```bash
 # 方式 A：直接跑（需配置 openclaw agents）

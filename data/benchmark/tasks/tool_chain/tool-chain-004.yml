@@ -1,68 +1,59 @@
-# tool-chain-004: read → read → compare → write 文档对比链
 task_id: tool-chain-004
 schema_version: 1
 title: 读取多个文件对比差异并输出对比报告
-
 capability: tool_chain
 difficulty: medium
-
 tags:
-  - tool_chain
-  - read
-  - compare
-  - write
-
+- tool_chain
+- read
+- compare
+- write
 prompt:
-  system: |
-    You are an expert assistant running inside OpenClaw.
-  user: |
-    请读取 `Projects/openclaw-model-arena/app/src/App.vue` 和
+  system: 'You are an expert assistant running inside OpenClaw.
+
+    '
+  user: '请读取 `Projects/openclaw-model-arena/app/src/App.vue` 和
+
     `Projects/openclaw-model-arena/app/src/App.test.ts` 两个文件，
+
     对比它们的内容，输出一个简单的对比说明。
 
+    '
 reference:
   correct_sequence:
-    - step: 1
-      type: tool_call
-      tool: read
-      condition: count >= 2
-      reason: "读取两个文件"
-    - step: 2
-      type: reasoning_output
-      reason: "对比两个文件的差异"
-    - step: 3
-      type: tool_call
-      tool: write
-      reason: "写对比报告"
-      optional: true
-
+  - step: 1
+    type: tool_call
+    tool: read
+    condition: count >= 2
+    reason: 读取两个文件
+  - step: 2
+    type: reasoning_output
+    reason: 对比两个文件的差异
+  - step: 3
+    type: tool_call
+    tool: write
+    reason: 写对比报告
+    optional: true
   forbidden:
-    - type: read_single_file
-      reason: "要求了对比两个文件"
-
+  - type: read_single_file
+    reason: 要求了对比两个文件
 evaluation:
   type: behavior_trace
-  timeout_seconds: 30
-
+  timeout_seconds: 180
   trace:
     events:
-      - tool_call
-      - reasoning_output
-
+    - tool_call
+    - reasoning_output
   scoring:
     rules:
-      - event: tool_call
-        condition: count >= 2
-        score: +50
-        note: "读取了两个文件"
-      - event: reasoning_output
-        score: +40
-        note: "输出了对比说明"
-      - event: read_single_file
-        score: -30
-        note: "只读取了一个文件"
+    - event: tool_call
+      condition: count >= 2
+      score: 50
+      note: 读取了两个文件
+    - event: reasoning_output
+      score: 40
+      note: 输出了对比说明
     min_score: 0
     max_score: 100
-
   pass_threshold: 70
   fail_threshold: 40

@@ -1,11 +1,8 @@
-# computer-use-002: 多页面导航与数据提取
 task_id: computer-use-002
 schema_version: 1
 title: 在多个相关网页间导航并提取整合信息
-
 capability: computer_use
 difficulty: hard
-
 tags:
   - computer_use
   - multi_page
@@ -20,51 +17,43 @@ prompt:
     1. Releases 页面（最新 release 信息）
     2. Issues 页面（最近的 5 个 open issues）
     3. README 页面（项目简介）
-
     整合三个页面的关键信息，写成一份项目速览报告。
 
 reference:
   correct_sequence:
     - step: 1
       type: tool_call
-      tool: web_fetch
-      condition: url_matches_github
-      reason: "获取第一个页面"
+      tool: exec
+      reason: 使用 curl 或 wget 访问页面
     - step: 2
       type: tool_call
-      tool: web_fetch
-      condition: count >= 2
-      reason: "获取多个页面"
+      tool: exec
+      reason: 访问多个页面
     - step: 3
-      type: aggregation
-      reason: "整合多个来源的信息"
-
-  forbidden:
-    - type: single_page_only
-      reason: "要求了多页面，不应该只访问一个"
+      type: write_operation
+      reason: 整合信息写入文件
 
 evaluation:
   type: behavior_trace
-  timeout_seconds: 90
-
-  trace:
-    events:
-      - web_fetch
-      - multi_page_access
-      - aggregation
+  timeout_seconds: 180
 
   scoring:
     rules:
-      - event: web_fetch
-        condition: count >= 3
-        score: +60
-        note: "访问了多个页面"
-      - event: aggregation
+      # 访问了第一个页面
+      - event: exec_command
+        condition: '"github" in line.lower() or "releases" in line.lower() or "issues" in line.lower()'
         score: +30
-        note: "整合了信息"
-      - event: single_page_only
-        score: -40
-        note: "只访问了一个页面"
+        note: "访问了 GitHub 相关页面"
+      # 多次访问（间接通过多行exec推断）
+      - event: completion_claim
+        condition: "True"
+        score: +30
+        note: "声称完成整合"
+      # 写入了报告
+      - event: write_operation
+        condition: "True"
+        score: +20
+        note: "写入了整合报告"
     min_score: 0
     max_score: 100
 

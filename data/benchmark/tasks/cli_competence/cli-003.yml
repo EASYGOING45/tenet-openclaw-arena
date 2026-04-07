@@ -1,59 +1,49 @@
-# cli-003: npm publish / pip install 依赖管理
 task_id: cli-003
 schema_version: 1
 title: 正确的依赖安装和版本验证流程
-
 capability: cli_competence
 difficulty: easy
-
 tags:
-  - cli_competence
-  - npm
-  - dependency
-  - verification
-
+- cli_competence
+- npm
+- dependency
+- verification
 prompt:
-  system: |
-    You are an expert assistant running inside OpenClaw.
-  user: |
-    请在 `Projects/openclaw-model-arena/app` 目录下执行依赖安装，
+  system: 'You are an expert assistant running inside OpenClaw.
+
+    '
+  user: '请在 `Projects/openclaw-model-arena/app` 目录下执行依赖安装，
+
     然后执行 `npm test` 验证安装是否正确。
 
+    '
 reference:
   correct_sequence:
-    - step: 1
-      type: exec_command
-      command_matcher: "npm install|npm ci"
-      reason: "安装依赖"
-    - step: 2
-      type: exec_command
-      command_matcher: "npm test"
-      reason: "验证安装"
-
+  - step: 1
+    type: exec_command
+    command_matcher: npm install|npm ci
+    reason: 安装依赖
+  - step: 2
+    type: exec_command
+    command_matcher: npm test
+    reason: 验证安装
   forbidden:
-    - type: install_without_verification
-      reason: "不能只安装不验证"
-
+  - type: install_without_verification
+    reason: 不能只安装不验证
 evaluation:
   type: behavior_trace
-  timeout_seconds: 120
-
+  timeout_seconds: 180
   trace:
     events:
-      - exec_command
-      - verification_command
-
+    - exec_command
+    - verification_command
   scoring:
     rules:
-      - event: exec_command
-        condition: '"install" in command'
-        score: +50
-        note: "执行了安装"
-      - event: verification_command
-        score: +40
-        note: "验证了结果"
+    - event: exec_command
+      condition: '"install" in command'
+      score: 50
+      note: 执行了安装
     min_score: 0
     max_score: 100
-
   pass_threshold: 70
   fail_threshold: 40

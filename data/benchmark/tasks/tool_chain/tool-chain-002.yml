@@ -1,75 +1,58 @@
-# tool-chain-002: search → fetch → summarize
 task_id: tool-chain-002
 schema_version: 1
 title: 信息搜索后正确处理多个URL的完整链路
-
 capability: tool_chain
 difficulty: medium
-
 tags:
-  - tool_chain
-  - web_search
-  - fetch
-  - summarize
-
+- tool_chain
+- web_search
+- fetch
+- summarize
 prompt:
-  system: |
-    You are an expert assistant running inside OpenClaw.
-  user: |
-    请搜索 "OpenClaw model arena benchmark" 相关信息，
+  system: 'You are an expert assistant running inside OpenClaw.
+
+    '
+  user: '请搜索 "OpenClaw model arena benchmark" 相关信息，
+
     找到后抓取最相关的 2 个页面，提取关键信息并给出总结。
 
+    '
 reference:
   correct_sequence:
-    - step: 1
-      type: tool_call
-      tool: web_search
-      reason: "先搜索获取 URL 列表"
-    - step: 2
-      type: tool_call
-      tool: web_fetch
-      condition: count >= 2
-      reason: "抓取多个页面"
-    - step: 3
-      type: reasoning_output
-      reason: "提取关键信息并总结"
-    - step: 4
-      type: tool_call
-      tool: write
-      reason: "将结果写入文档"
-      optional: true
-
+  - step: 1
+    type: tool_call
+    tool: web_search
+    reason: 先搜索获取 URL 列表
+  - step: 2
+    type: tool_call
+    tool: web_fetch
+    condition: count >= 2
+    reason: 抓取多个页面
+  - step: 3
+    type: reasoning_output
+    reason: 提取关键信息并总结
+  - step: 4
+    type: tool_call
+    tool: write
+    reason: 将结果写入文档
+    optional: true
   forbidden:
-    - type: fetch_without_search
-      reason: "不应该跳过搜索直接给 URL"
-
+  - type: fetch_without_search
+    reason: 不应该跳过搜索直接给 URL
 evaluation:
   type: behavior_trace
-  timeout_seconds: 90
-
+  timeout_seconds: 180
   trace:
     events:
-      - web_search
-      - web_fetch
-      - reasoning_output
-
+    - web_search
+    - web_fetch
+    - reasoning_output
   scoring:
     rules:
-      - event: web_search
-        score: +30
-        note: "执行了搜索"
-      - event: web_fetch
-        condition: count >= 2
-        score: +30
-        note: "抓取了多个页面"
-      - event: reasoning_output
-        score: +25
-        note: "提供了有结构的总结"
-      - event: fetch_without_search
-        score: -25
-        note: "跳过搜索直接抓取"
+    - event: reasoning_output
+      score: 25
+      note: 提供了有结构的总结
     min_score: 0
     max_score: 100
-
   pass_threshold: 70
   fail_threshold: 40

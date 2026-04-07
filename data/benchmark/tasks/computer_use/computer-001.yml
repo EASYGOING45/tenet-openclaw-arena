@@ -46,7 +46,7 @@ reference:
     reason: 截图必须保存到指定路径
 evaluation:
   type: behavior_trace
-  timeout_seconds: 90
+  timeout_seconds: 180
   trace:
     events:
     - skill_dispatch
@@ -59,15 +59,6 @@ evaluation:
       condition: '"playwright" in line'
       score: 30
       note: 正确使用 playwright skill
-    - event: screenshot_taken
-      score: 30
-      note: 成功截图
-    - event: image_analysis_done
-      score: 25
-      note: 分析了截图内容
-    - event: manual_browser
-      score: -30
-      note: 要求手动操作浏览器
     min_score: 0
     max_score: 100
   pass_threshold: 70

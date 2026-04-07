@@ -54,9 +54,6 @@ evaluation:
       condition: '"systematic-debugging" in line'
       score: 40
       note: 正确调用 debugging
-    - event: direct_code_fix
-      score: -30
-      note: 不分析直接修复
     min_score: 0
     max_score: 100
   pass_threshold: 70

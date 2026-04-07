@@ -1,85 +1,70 @@
-# delegation-002: 串行依赖任务分解执行
 task_id: delegation-002
 schema_version: 1
 title: 串行依赖的多步骤任务正确分解并用 subagent 执行
-
 capability: delegation
 difficulty: hard
-
 tags:
-  - delegation
-  - sequential
-  - subagent
-  - task_decomposition
-
+- delegation
+- sequential
+- subagent
+- task_decomposition
 prompt:
-  system: |
-    You are an expert assistant running inside OpenClaw.
-  user: |
-    请用 subagent 完成以下多步骤任务：
+  system: 'You are an expert assistant running inside OpenClaw.
+
+    '
+  user: '请用 subagent 完成以下多步骤任务：
+
     1. 先搜索 GitHub 上 openclaw/openclaw 的最新 release 版本号
+
     2. 把版本号写入 `output/latest-release.txt`
+
     3. 搜索该版本的主要新特性并追加写入同一文件
 
+    '
 context:
   workspace_hints:
-    - "步骤有依赖：第2步需要第1步的结果"
-    - "应该用 subagent 串行处理而非并行"
-
+  - 步骤有依赖：第2步需要第1步的结果
+  - 应该用 subagent 串行处理而非并行
 reference:
   correct_sequence:
-    - step: 1
-      type: subagent_spawn
-      task: "搜索最新 release 版本号"
-      reason: "第一步：获取版本号"
-    - step: 2
-      type: result_collected
-      reason: "收集版本号结果"
-    - step: 3
-      type: subagent_spawn
-      task: "搜索新特性"
-      reason: "第二步：基于版本号搜索新特性"
-    - step: 4
-      type: tool_call
-      tool: write
-      reason: "写入文件"
-
+  - step: 1
+    type: subagent_spawn
+    task: 搜索最新 release 版本号
+    reason: 第一步：获取版本号
+  - step: 2
+    type: result_collected
+    reason: 收集版本号结果
+  - step: 3
+    type: subagent_spawn
+    task: 搜索新特性
+    reason: 第二步：基于版本号搜索新特性
+  - step: 4
+    type: tool_call
+    tool: write
+    reason: 写入文件
   forbidden:
-    - type: all_parallel
-      reason: "不应该把有依赖关系的任务并行执行"
-    - type: no_write
-      reason: "必须写入文件交付结果"
-
+  - type: all_parallel
+    reason: 不应该把有依赖关系的任务并行执行
+  - type: no_write
+    reason: 必须写入文件交付结果
 evaluation:
   type: behavior_trace
-  timeout_seconds: 120
-
+  timeout_seconds: 180
   trace:
     events:
-      - subagent_spawn
-      - result_collected
-      - sequential_follow_up
-      - write_operation
-
+    - subagent_spawn
+    - result_collected
+    - sequential_follow_up
+    - write_operation
   scoring:
     rules:
-      - event: subagent_spawn
-        score: +30
-        note: "使用了 subagent"
-      - event: result_collected
-        score: +20
-        note: "收集了结果"
-      - event: sequential_follow_up
-        score: +30
-        note: "基于结果执行了后续步骤"
-      - event: write_operation
-        score: +15
-        note: "写入了结果文件"
-      - event: all_parallel
-        score: -20
-        note: "不应该把依赖任务并行执行"
+    - event: subagent_spawn
+      score: 30
+      note: 使用了 subagent
+    - event: write_operation
+      score: 15
+      note: 写入了结果文件
     min_score: 0
     max_score: 100
-
   pass_threshold: 70
   fail_threshold: 40

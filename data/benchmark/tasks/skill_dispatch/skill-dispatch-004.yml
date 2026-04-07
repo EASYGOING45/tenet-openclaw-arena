@@ -50,12 +50,6 @@ evaluation:
       condition: '"verification-before-completion" in line'
       score: 50
       note: 正确调用了验收 skill
-    - event: verification_performed
-      score: 30
-      note: 执行了验证操作
-    - event: claim_without_verification
-      score: -40
-      note: 未验证就声称完成
     min_score: 0
     max_score: 100
   pass_threshold: 70

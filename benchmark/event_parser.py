@@ -34,8 +34,8 @@ _KEYWORD_EVENT_MAP = {
     re.compile(r"\bread\b|\bedit\b|\bwrite\b|\bexec\b|tool_call|Tool Call", re.I): "tool_call",
     # subagent_spawn
     re.compile(r"spawn|subagent|Starting.*agent|agent.*started", re.I): "subagent_spawn",
-    # exec_command
-    re.compile(r"git\s|npm\s|wrangler\s|python3?\s|bash\s|sh\s|curl\s", re.I): "exec_command",
+    # exec_command — use word boundary so it matches in JSON like {"command": "git status"}
+    re.compile(r"\bgit\b|\bnpm\b|\bwrangler\b|\bpython3?\b|\bbash\b|\bsh\b|\bcurl\b", re.I): "exec_command",
     # error_occurred
     re.compile(r"\berror\b|\bError\b|\bfailed\b|\bfailure\b|Exception|traceback", re.I): "error_occurred",
     # self_corrected

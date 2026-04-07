@@ -1,80 +1,64 @@
-# delegation-001: 多 subagent 并行执行后汇总结果
 task_id: delegation-001
 schema_version: 1
 title: 正确使用 sessions_spawn 并行调度多个子任务
-
 capability: delegation
 difficulty: hard
-
 tags:
-  - delegation
-  - sessions_spawn
-  - parallel
-  - aggregation
-
+- delegation
+- sessions_spawn
+- parallel
+- aggregation
 prompt:
-  system: |
-    You are an expert assistant running inside OpenClaw.
+  system: 'You are an expert assistant running inside OpenClaw.
+
     You can use the sessions_spawn tool to delegate tasks to subagents.
-  user: |
-    请对 `Projects/openclaw-model-arena/app/src/` 目录下的所有 Vue 组件
+
+    '
+  user: '请对 `Projects/openclaw-model-arena/app/src/` 目录下的所有 Vue 组件
+
     做一次代码审查（code review），并给出审查报告。
+
     请合理使用 subagent 并行执行。
 
+    '
 context:
   workspace_hints:
-    - "有多个组件文件需要审查"
-    - "可以用 sessions_spawn 并行处理多个文件"
-    - "结果需要汇总成一份报告"
-
+  - 有多个组件文件需要审查
+  - 可以用 sessions_spawn 并行处理多个文件
+  - 结果需要汇总成一份报告
 reference:
   correct_sequence:
-    - step: 1
-      type: subagent_spawn
-      condition: count >= 2
-      reason: "并行调度多个 subagent"
-    - step: 2
-      type: result_collected
-      condition: count >= 2
-      reason: "收集各 subagent 的审查结果"
-    - step: 3
-      type: aggregation
-      reason: "将多个结果汇总成统一报告"
-
+  - step: 1
+    type: subagent_spawn
+    condition: count >= 2
+    reason: 并行调度多个 subagent
+  - step: 2
+    type: result_collected
+    condition: count >= 2
+    reason: 收集各 subagent 的审查结果
+  - step: 3
+    type: aggregation
+    reason: 将多个结果汇总成统一报告
   forbidden:
-    - type: sequential_only
-      reason: "不应该逐个文件串行审查，丢失并行优势"
-    - type: no_aggregation
-      reason: "不汇总结果，各自输出后没有综合报告"
-
+  - type: sequential_only
+    reason: 不应该逐个文件串行审查，丢失并行优势
+  - type: no_aggregation
+    reason: 不汇总结果，各自输出后没有综合报告
 evaluation:
   type: behavior_trace
   timeout_seconds: 180
-
   trace:
     events:
-      - subagent_spawn
-      - subagent_result_collected
-      - aggregation_performed
-
+    - subagent_spawn
+    - subagent_result_collected
+    - aggregation_performed
   scoring:
     rules:
-      - event: subagent_spawn
-        condition: count >= 2
-        score: +40
-        note: "正确并行调度多个 subagent"
-      - event: subagent_result_collected
-        condition: count >= 2
-        score: +30
-        note: "收集了并行任务结果"
-      - event: aggregation_performed
-        score: +20
-        note: "提供了汇总报告"
-      - event: sequential_only
-        score: -30
-        note: "没有使用并行调度"
+    - event: subagent_spawn
+      condition: count >= 2
+      score: 40
+      note: 正确并行调度多个 subagent
     min_score: 0
     max_score: 100
-
   pass_threshold: 70
   fail_threshold: 40

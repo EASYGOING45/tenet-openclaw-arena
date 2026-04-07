@@ -41,41 +41,36 @@ reference:
       optional: true
 
   forbidden:
-    - type: git_add_all_without_check
-      reason: "不应该直接 git add -A 而不先确认状态"
-    - type: commit_with_invalid_message
-      reason: "commit message 不应该为空或无意义"
+    - type: direct_code_write
+      reason: "不应该直接写代码绕过 git"
 
 evaluation:
   type: behavior_trace
   timeout_seconds: 180
 
-  trace:
-    events:
-      - exec_command
-      - git_status_checked
-      - git_add_performed
-      - git_commit_done
-      - git_push_done
-
   scoring:
     rules:
+      # 检查 git status
       - event: exec_command
-        condition: '"git status" in command'
+        condition: '"git" in line and "status" in line'
         score: +20
         note: "先检查状态"
-      - event: git_add_performed
+      # 检查 git add（任意形式：add/add ./-A/.)
+      - event: exec_command
+        condition: '"git" in line and "add" in line'
         score: +30
         note: "执行了 git add"
-      - event: git_commit_done
+      # 检查 git commit
+      - event: exec_command
+        condition: '"git" in line and "commit" in line'
         score: +30
         note: "执行了 git commit"
-      - event: git_push_done
+      # 检查 git push
+      - event: exec_command
+        condition: '"git" in line and "push" in line'
         score: +10
         note: "推送到远程"
-      - event: git_add_all_without_check
-        score: -20
-        note: "不检查状态直接 add"
+      # git add -A 不算错，只要先检查过就行
     min_score: 0
     max_score: 100
 

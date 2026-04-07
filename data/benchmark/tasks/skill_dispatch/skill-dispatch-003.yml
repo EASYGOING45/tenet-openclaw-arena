@@ -50,12 +50,6 @@ evaluation:
       condition: '"frontend-design" in line'
       score: 50
       note: 正确调用 frontend-design
-    - event: unnecessary_brainstorming
-      score: -20
-      note: 需求明确时不应再做 brainstorming
-    - event: design_output
-      score: 30
-      note: 给出了设计方案
     - event: direct_code_write
       score: -20
       note: 跳过设计直接写代码

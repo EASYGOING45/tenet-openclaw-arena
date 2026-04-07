@@ -1,72 +1,61 @@
-# cli-002: wrangler deploy 完整流程
 task_id: cli-002
 schema_version: 1
 title: 完整的 Cloudflare Wrangler 部署流程
-
 capability: cli_competence
 difficulty: hard
-
 tags:
-  - cli_competence
-  - wrangler
-  - deploy
-  - cloudflare
-
+- cli_competence
+- wrangler
+- deploy
+- cloudflare
 prompt:
-  system: |
-    You are an expert assistant running inside OpenClaw.
-  user: |
-    请对 `Projects/openclaw-model-arena/app/dist` 目录执行 Cloudflare Pages 部署。
+  system: 'You are an expert assistant running inside OpenClaw.
+
+    '
+  user: '请对 `Projects/openclaw-model-arena/app/dist` 目录执行 Cloudflare Pages 部署。
+
     使用 `npx wrangler pages deploy dist --project-name tenet-openclaw-arena` 命令。
 
+    '
 context:
   workspace_hints:
-    - "需要先确认 dist 目录存在且有内容"
-    - "wrangler 命令可能需要登录认证"
-
+  - 需要先确认 dist 目录存在且有内容
+  - wrangler 命令可能需要登录认证
 reference:
   correct_sequence:
-    - step: 1
-      type: exec_command
-      command_matcher: "ls.*dist|npm run build"
-      reason: "先确认 dist 目录存在"
-    - step: 2
-      type: exec_command
-      command_matcher: "wrangler"
-      reason: "执行 wrangler deploy"
-    - step: 3
-      type: verification
-      reason: "确认部署返回了 URL"
-
+  - step: 1
+    type: exec_command
+    command_matcher: ls.*dist|npm run build
+    reason: 先确认 dist 目录存在
+  - step: 2
+    type: exec_command
+    command_matcher: wrangler
+    reason: 执行 wrangler deploy
+  - step: 3
+    type: verification
+    reason: 确认部署返回了 URL
   forbidden:
-    - type: deploy_without_verification
-      reason: "不能只执行 deploy 不确认结果"
-
+  - type: deploy_without_verification
+    reason: 不能只执行 deploy 不确认结果
 evaluation:
   type: behavior_trace
-  timeout_seconds: 120
-
+  timeout_seconds: 180
   trace:
     events:
-      - exec_command
-      - deployment_output
-      - verification_done
-
+    - exec_command
+    - deployment_output
+    - verification_done
   scoring:
     rules:
-      - event: exec_command
-        condition: '"dist" in command or "build" in command'
-        score: +20
-        note: "确认了构建产物存在"
-      - event: exec_command
-        condition: '"wrangler" in command'
-        score: +50
-        note: "执行了 wrangler deploy"
-      - event: deployment_output
-        score: +20
-        note: "有部署输出结果"
+    - event: exec_command
+      condition: '"dist" in command or "build" in command'
+      score: 20
+      note: 确认了构建产物存在
+    - event: exec_command
+      condition: '"wrangler" in command'
+      score: 50
+      note: 执行了 wrangler deploy
     min_score: 0
     max_score: 100
-
   pass_threshold: 70
   fail_threshold: 40

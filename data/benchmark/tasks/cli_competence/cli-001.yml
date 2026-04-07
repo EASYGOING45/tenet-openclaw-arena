@@ -50,27 +50,26 @@ evaluation:
 
   scoring:
     rules:
-      # 检查 git status
+      # 检查是否执行了 exec 命令（包含 git 工具调用）
       - event: exec_command
-        condition: '"git" in line and "status" in line'
+        condition: '"git" in line'
+        score: +40
+        note: "执行了 git 命令"
+      # 检查是否调用了 exec 工具（实际执行命令）
+      - event: tool_call
+        condition: 'tool == "exec"'
+        score: +30
+        note: "调用了 exec 工具执行命令"
+      # 检查是否有写操作（修改了文件）
+      - event: write_operation
+        condition: "True"
         score: +20
-        note: "先检查状态"
-      # 检查 git add（任意形式：add/add ./-A/.)
-      - event: exec_command
-        condition: '"git" in line and "add" in line'
-        score: +30
-        note: "执行了 git add"
-      # 检查 git commit
-      - event: exec_command
-        condition: '"git" in line and "commit" in line'
-        score: +30
-        note: "执行了 git commit"
-      # 检查 git push
-      - event: exec_command
-        condition: '"git" in line and "push" in line'
+        note: "有写操作"
+      # 声称完成
+      - event: completion_claim
+        condition: "True"
         score: +10
-        note: "推送到远程"
-      # git add -A 不算错，只要先检查过就行
+        note: "声称完成"
     min_score: 0
     max_score: 100
 

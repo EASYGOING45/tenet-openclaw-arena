@@ -1,79 +1,74 @@
-# computer-001: playwright 浏览器自动化截图验证
 task_id: computer-001
 schema_version: 1
 title: 用 Playwright 自动化打开网页并截图验证
-
 capability: computer_use
 difficulty: hard
-
 tags:
-  - computer_use
-  - playwright
-  - screenshot
-  - browser_automation
-
+- computer_use
+- playwright
+- screenshot
+- browser_automation
 prompt:
-  system: |
-    You are an expert assistant running inside OpenClaw.
+  system: 'You are an expert assistant running inside OpenClaw.
+
     You have access to the playwright skill and browser automation tools.
-  user: |
-    请用 Playwright 打开 `http://127.0.0.1:4173`，
+
+    '
+  user: '请用 Playwright 打开 `http://127.0.0.1:4173`，
+
     等待页面加载完成后截图保存到 `photos/screenshots/arena-verify.png`，
+
     然后用 image 工具分析截图内容是否正常显示。
 
+    '
 reference:
   correct_sequence:
-    - step: 1
-      type: skill_invoked
-      skill: playwright
-      reason: "应使用 playwright skill 执行浏览器自动化"
-    - step: 2
-      type: exec_command
-      command_matcher: "playwright|python.*selenium|screenshot"
-      reason: "执行浏览器截图操作"
-    - step: 3
-      type: tool_call
-      tool: write
-      reason: "截图保存到正确路径"
-    - step: 4
-      type: tool_call
-      tool: image
-      reason: "用 image 工具分析截图"
-
+  - step: 1
+    type: skill_invoked
+    skill: playwright
+    reason: 应使用 playwright skill 执行浏览器自动化
+  - step: 2
+    type: exec_command
+    command_matcher: playwright|python.*selenium|screenshot
+    reason: 执行浏览器截图操作
+  - step: 3
+    type: tool_call
+    tool: write
+    reason: 截图保存到正确路径
+  - step: 4
+    type: tool_call
+    tool: image
+    reason: 用 image 工具分析截图
   forbidden:
-    - type: manual_browser
-      reason: "不应该要求用户手动打开浏览器"
-    - type: screenshot_not_saved
-      reason: "截图必须保存到指定路径"
-
+  - type: manual_browser
+    reason: 不应该要求用户手动打开浏览器
+  - type: screenshot_not_saved
+    reason: 截图必须保存到指定路径
 evaluation:
   type: behavior_trace
   timeout_seconds: 90
-
   trace:
     events:
-      - skill_dispatch
-      - browser_navigation
-      - screenshot_taken
-      - image_analysis_done
-
+    - skill_dispatch
+    - browser_navigation
+    - screenshot_taken
+    - image_analysis_done
   scoring:
     rules:
-      - event: skill_dispatch
-        condition: skill == "playwright"
-        score: +30
-        note: "正确使用 playwright skill"
-      - event: screenshot_taken
-        score: +30
-        note: "成功截图"
-      - event: image_analysis_done
-        score: +25
-        note: "分析了截图内容"
-      - event: manual_browser
-        score: -30
-        note: "要求手动操作浏览器"
+    - event: skill_dispatch
+      condition: '"playwright" in line'
+      score: 30
+      note: 正确使用 playwright skill
+    - event: screenshot_taken
+      score: 30
+      note: 成功截图
+    - event: image_analysis_done
+      score: 25
+      note: 分析了截图内容
+    - event: manual_browser
+      score: -30
+      note: 要求手动操作浏览器
     min_score: 0
     max_score: 100
-
   pass_threshold: 70
   fail_threshold: 40

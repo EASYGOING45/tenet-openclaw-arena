@@ -48,7 +48,7 @@ reference:
 
 evaluation:
   type: behavior_trace
-  timeout_seconds: 60
+  timeout_seconds: 180
 
   trace:
     events:

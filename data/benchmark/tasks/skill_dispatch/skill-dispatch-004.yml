@@ -1,70 +1,62 @@
-# skill-dispatch-004: 复杂场景下选择 verification-before-completion
 task_id: skill-dispatch-004
 schema_version: 1
 title: 任务完成后正确调用 verification skill 进行验收
-
 capability: skill_dispatch
 difficulty: medium
-
 tags:
-  - skill_dispatch
-  - verification
-  - completion_claim
-
+- skill_dispatch
+- verification
+- completion_claim
 prompt:
-  system: |
-    You are an expert assistant running inside OpenClaw.
-  user: |
-    用户刚才让你修改了 `Projects/openclaw-model-arena/app/src/App.vue` 的标题。
+  system: 'You are an expert assistant running inside OpenClaw.
+
+    '
+  user: '用户刚才让你修改了 `Projects/openclaw-model-arena/app/src/App.vue` 的标题。
+
     请验收这个修改是否正确生效。
 
+    '
 context:
   workspace_hints:
-    - "应该用 verification-before-completion skill"
-    - "需要对比期望值和实际值"
-
+  - 应该用 verification-before-completion skill
+  - 需要对比期望值和实际值
 reference:
   correct_sequence:
-    - step: 1
-      type: skill_invoked
-      skill: verification-before-completion
-      reason: "应该用验收 skill"
-    - step: 2
-      type: verification_performed
-      reason: "执行了具体验证（grep/build/读取）"
-    - step: 3
-      type: completion_claim
-      condition: verified == true
-      reason: "基于验证结果给出结论"
-
+  - step: 1
+    type: skill_invoked
+    skill: verification-before-completion
+    reason: 应该用验收 skill
+  - step: 2
+    type: verification_performed
+    reason: 执行了具体验证（grep/build/读取）
+  - step: 3
+    type: completion_claim
+    condition: verified == true
+    reason: 基于验证结果给出结论
   forbidden:
-    - type: claim_without_verification
-      reason: "不能未经验证就声称完成"
-
+  - type: claim_without_verification
+    reason: 不能未经验证就声称完成
 evaluation:
   type: behavior_trace
-  timeout_seconds: 60
-
+  timeout_seconds: 180
   trace:
     events:
-      - skill_dispatch
-      - verification_performed
-      - completion_claim
-
+    - skill_dispatch
+    - verification_performed
+    - completion_claim
   scoring:
     rules:
-      - event: skill_dispatch
-        condition: skill == "verification-before-completion"
-        score: +50
-        note: "正确调用了验收 skill"
-      - event: verification_performed
-        score: +30
-        note: "执行了验证操作"
-      - event: claim_without_verification
-        score: -40
-        note: "未验证就声称完成"
+    - event: skill_dispatch
+      condition: '"verification-before-completion" in line'
+      score: 50
+      note: 正确调用了验收 skill
+    - event: verification_performed
+      score: 30
+      note: 执行了验证操作
+    - event: claim_without_verification
+      score: -40
+      note: 未验证就声称完成
     min_score: 0
     max_score: 100
-
   pass_threshold: 70
   fail_threshold: 40

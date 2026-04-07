@@ -91,12 +91,12 @@ def _check_rule(rule: dict[str, Any], events: list[dict[str, Any]]) -> bool:
             try:
                 # Build safe eval context from event fields
                 ctx = {
-                    "skill": evt.get("skill", ""),
-                    "tool": evt.get("tool", ""),
-                    "type": evt.get("type", ""),
-                    "line": evt.get("line", ""),
-                    "source": evt.get("source", ""),
-                    "content_preview": evt.get("content_preview", ""),
+                    "skill": evt.get("skill") or "",
+                    "tool": evt.get("tool") or "",
+                    "type": evt.get("type") or "",
+                    "line": evt.get("line") or "",
+                    "source": evt.get("source") or "",
+                    "content_preview": evt.get("content_preview") or "",
                 }
                 # Also allow checking rule-level fields
                 if not eval(condition, {"__builtins__": {}}, ctx):
@@ -146,10 +146,10 @@ def score_with_breakdown(
                 cond_ok = True
                 if rule.get("condition"):
                     ctx = {
-                        "skill": evt.get("skill", ""),
-                        "tool": evt.get("tool", ""),
-                        "type": evt.get("type", ""),
-                        "line": evt.get("line", ""),
+                        "skill": evt.get("skill") or "",
+                        "tool": evt.get("tool") or "",
+                        "type": evt.get("type") or "",
+                        "line": evt.get("line") or "",
                     }
                     try:
                         cond_ok = eval(rule["condition"], {"__builtins__": {}}, ctx)

@@ -1,72 +1,65 @@
-# skill-dispatch-003: 何时该调用 frontend-design skill
 task_id: skill-dispatch-003
 schema_version: 1
 title: 需求明确后正确调用 frontend-design 进行设计
-
 capability: skill_dispatch
 difficulty: medium
-
 tags:
-  - skill_dispatch
-  - frontend-design
-  - design_before_code
-
+- skill_dispatch
+- frontend-design
+- design_before_code
 prompt:
-  system: |
-    You are an expert assistant running inside OpenClaw.
-  user: |
-    用户需求已经非常明确：
+  system: 'You are an expert assistant running inside OpenClaw.
+
+    '
+  user: '用户需求已经非常明确：
+
     "做一个登录页面，包含用户名/密码输入、表单验证、提交按钮。"
+
     请开始设计这个登录页面的具体方案。
 
+    '
 context:
   workspace_hints:
-    - "需求已经明确，不需要再 brainstorming"
-    - "应该直接进入 frontend-design 阶段"
-
+  - 需求已经明确，不需要再 brainstorming
+  - 应该直接进入 frontend-design 阶段
 reference:
   correct_sequence:
-    - step: 1
-      type: skill_invoked
-      skill: frontend-design
-      reason: "需求明确，应直接调用设计 skill"
-    - step: 2
-      type: design_output
-      reason: "给出设计方案（组件结构/样式方向/技术选型）"
-
+  - step: 1
+    type: skill_invoked
+    skill: frontend-design
+    reason: 需求明确，应直接调用设计 skill
+  - step: 2
+    type: design_output
+    reason: 给出设计方案（组件结构/样式方向/技术选型）
   forbidden:
-    - type: unnecessary_brainstorming
-      reason: "需求已明确不需要再 brainstorming"
-    - type: direct_code_write
-      reason: "应该先设计再写代码"
-
+  - type: unnecessary_brainstorming
+    reason: 需求已明确不需要再 brainstorming
+  - type: direct_code_write
+    reason: 应该先设计再写代码
 evaluation:
   type: behavior_trace
-  timeout_seconds: 60
-
+  timeout_seconds: 180
   trace:
     events:
-      - skill_dispatch
-      - design_output
-      - code_written
-
+    - skill_dispatch
+    - design_output
+    - code_written
   scoring:
     rules:
-      - event: skill_invoked
-        condition: skill == "frontend-design"
-        score: +50
-        note: "正确调用 frontend-design"
-      - event: unnecessary_brainstorming
-        score: -20
-        note: "需求明确时不应再做 brainstorming"
-      - event: design_output
-        score: +30
-        note: "给出了设计方案"
-      - event: direct_code_write
-        score: -20
-        note: "跳过设计直接写代码"
+    - event: skill_dispatch
+      condition: '"frontend-design" in line'
+      score: 50
+      note: 正确调用 frontend-design
+    - event: unnecessary_brainstorming
+      score: -20
+      note: 需求明确时不应再做 brainstorming
+    - event: design_output
+      score: 30
+      note: 给出了设计方案
+    - event: direct_code_write
+      score: -20
+      note: 跳过设计直接写代码
     min_score: 0
     max_score: 100
-
   pass_threshold: 70
   fail_threshold: 40

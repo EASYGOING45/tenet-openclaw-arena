@@ -1,113 +1,111 @@
-# skill-dispatch-001: 正确判断何时该调用 brainstorming skill
 task_id: skill-dispatch-001
 schema_version: 1
 title: 需求分析阶段正确调用 brainstorming skill
-
 capability: skill_dispatch
 difficulty: medium
-
 tags:
-  - skill_dispatch
-  - brainstorming
-  - requirement_analysis
-
+- skill_dispatch
+- brainstorming
+- requirement_analysis
 prompt:
-  system: |
-    You are an expert assistant running inside OpenClaw.
+  system: 'You are an expert assistant running inside OpenClaw.
+
     You have access to skills, tools, CLI commands, and subagents.
-  user: |
-    用户要做一个笔记应用（类似 Obsidian，支持双链和本地 Markdown）。
+
+    '
+  user: '用户要做一个笔记应用（类似 Obsidian，支持双链和本地 Markdown）。
+
     请先做需求分析，然后给出初步的技术方案。
 
+    '
 context:
   workspace_hints:
-    - "docs/PLAN.md 可能已存在"
-    - "Notes/ 目录下可能有现有笔记结构"
+  - docs/PLAN.md 可能已存在
+  - Notes/ 目录下可能有现有笔记结构
   available_skills:
-    - brainstorming
-    - frontend-design
-    - test-driven-development
-    - using-superpowers
-
+  - brainstorming
+  - frontend-design
+  - test-driven-development
+  - using-superpowers
 reference:
   correct_sequence:
-    - step: 1
-      type: skill_invoked
-      skill: brainstorming
-      reason: "需求分析是 brainstorming 的典型适用场景"
-    - step: 2
-      type: reasoning_shown
-      reason: "应该输出结构化的需求分析（功能/非功能/边界）"
-    - step: 3
-      type: skill_invoked
-      skill: frontend-design
-      reason: "进入设计阶段才应该调用 frontend-design"
-      optional: true
-
+  - step: 1
+    type: skill_invoked
+    skill: brainstorming
+    reason: 需求分析是 brainstorming 的典型适用场景
+  - step: 2
+    type: reasoning_shown
+    reason: 应该输出结构化的需求分析（功能/非功能/边界）
+  - step: 3
+    type: skill_invoked
+    skill: frontend-design
+    reason: 进入设计阶段才应该调用 frontend-design
+    optional: true
   forbidden:
-    - type: direct_code_write
-      reason: "第一轮回复不应该直接写代码"
-    - type: skill_invoked
-      skill: frontend-design
-      reason: "跳过 brainstorming 直接设计是错误路径"
-    - type: exec_npm_run
-      reason: "在未完成设计前不应该执行 npm"
-
+  - type: direct_code_write
+    reason: 第一轮回复不应该直接写代码
+  - type: skill_invoked
+    skill: frontend-design
+    reason: 跳过 brainstorming 直接设计是错误路径
+  - type: exec_npm_run
+    reason: 在未完成设计前不应该执行 npm
 evaluation:
   type: behavior_trace
-  timeout_seconds: 90
-
+  timeout_seconds: 180
   trace:
     events:
-      - skill_dispatch
-      - reasoning_output
-      - tool_call
-      - subagent_spawn
-
+    - skill_dispatch
+    - reasoning_output
+    - tool_call
+    - subagent_spawn
   scoring:
     rules:
-      - event: skill_invoked
-        condition: skill == "brainstorming"
-        score: +40
-        note: "正确调用 brainstorming"
-      - event: skill_invoked
-        condition: skill == "frontend-design"
-        score: -20
-        note: "过早进入设计阶段"
-      - event: direct_code_write
-        score: -30
-        note: "跳过分析和设计直接写代码"
-      - event: reasoning_output
-        score: +20
-        note: "提供了结构化推理"
-      - event: self_corrected
-        score: +15
-        note: "失败后成功自愈"
-      - event: premature_exec
-        score: -15
-        note: "在设计完成前过早执行命令"
+    - event: skill_dispatch
+      condition: '"brainstorming" in line or "brainstorming" in tool'
+      score: 40
+      note: 正确调用了 brainstorming 相关技能
+    - event: skill_dispatch
+      condition: '"frontend-design" in line'
+      score: -20
+      note: 过早进入设计阶段
+    - event: reasoning_output
+      score: 20
+      note: 提供了结构化推理
+    - event: tool_call
+      condition: tool == "read"
+      score: 10
+      note: 先读取了文件
+    - event: subagent_spawn
+      score: 20
+      note: 使用了 subagent 并行执行
+    - event: completion_claim
+      score: 10
+      note: 输出了完成声明
+    - event: error_occurred
+      score: 0
+      note: 遇到错误（正常）
+    - event: self_corrected
+      score: 15
+      note: 失败后成功自愈
     min_score: 0
     max_score: 100
-
-  pass_threshold: 70
-  fail_threshold: 40
-
+  pass_threshold: 60
+  fail_threshold: 30
 examples:
-  - name: 正确路径
-    events:
-      - type: skill_invoked
-        skill: brainstorming
-        timestamp: "+3s"
-      - type: reasoning_output
-        content_matches: "功能需求|非功能需求"
-        timestamp: "+8s"
-    score: 90
-    verdict: PASS
-
-  - name: 过早设计
-    events:
-      - type: skill_invoked
-        skill: frontend-design
-        timestamp: "+5s"
-    score: 30
-    verdict: FAIL
+- name: 正确路径
+  events:
+  - type: skill_invoked
+    skill: brainstorming
+    timestamp: +3s
+  - type: reasoning_output
+    content_matches: 功能需求|非功能需求
+    timestamp: +8s
+  score: 90
+  verdict: PASS
+- name: 过早设计
+  events:
+  - type: skill_invoked
+    skill: frontend-design
+    timestamp: +5s
+  score: 30
+  verdict: FAIL

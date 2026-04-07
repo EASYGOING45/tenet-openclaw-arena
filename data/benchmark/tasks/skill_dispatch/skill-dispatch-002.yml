@@ -1,89 +1,74 @@
-# skill-dispatch-002: 正确判断何时该调用 systematic-debugging skill
 task_id: skill-dispatch-002
 schema_version: 1
 title: Bug报告后正确调用 debugging skill 而非直接修复
-
 capability: skill_dispatch
 difficulty: easy
-
 tags:
-  - skill_dispatch
-  - systematic-debugging
-  - bug_analysis
-
+- skill_dispatch
+- systematic-debugging
+- bug_analysis
 prompt:
-  system: |
-    You are an expert assistant running inside OpenClaw.
-    You have access to skills, tools, CLI commands, and subagents.
-  user: |
-    这个 Python 脚本运行失败了，请修复它：
-    ```
-    def merge_sorted(a, b):
-        return sorted(a + b)
-    ```
-    错误信息：`TypeError: 'NoneType' object is not iterable`
+  system: 'You are an expert assistant running inside OpenClaw.
 
+    You have access to skills, tools, CLI commands, and subagents.
+
+    '
+  user: "这个 Python 脚本运行失败了，请修复它：\n```\ndef merge_sorted(a, b):\n    return sorted(a\
+    \ + b)\n```\n错误信息：`TypeError: 'NoneType' object is not iterable`\n"
 context:
   workspace_hints:
-    - "先读取脚本文件确认内容"
-
+  - 先读取脚本文件确认内容
 reference:
   correct_sequence:
-    - step: 1
-      type: tool_call
-      tool: read
-      reason: "先确认文件实际内容"
-    - step: 2
-      type: skill_invoked
-      skill: systematic-debugging
-      reason: "Bug 分析应该用 debugging skill"
-      optional: false
-    - step: 3
-      type: code_fix
-      reason: "修复代码"
-
+  - step: 1
+    type: tool_call
+    tool: read
+    reason: 先确认文件实际内容
+  - step: 2
+    type: skill_invoked
+    skill: systematic-debugging
+    reason: Bug 分析应该用 debugging skill
+    optional: false
+  - step: 3
+    type: code_fix
+    reason: 修复代码
   forbidden:
-    - type: direct_code_fix
-      reason: "不应该不分析就直接改代码"
-
+  - type: direct_code_fix
+    reason: 不应该不分析就直接改代码
 evaluation:
   type: behavior_trace
-  timeout_seconds: 60
-
+  timeout_seconds: 180
   trace:
     events:
-      - tool_call
-      - skill_dispatch
-      - code_fix
-      - error_occurred
-
+    - tool_call
+    - skill_dispatch
+    - code_fix
+    - error_occurred
   scoring:
     rules:
-      - event: tool_call
-        condition: tool == "read"
-        score: +20
-        note: "先读取文件确认"
-      - event: skill_invoked
-        condition: skill == "systematic-debugging"
-        score: +40
-        note: "正确调用 debugging"
-      - event: direct_code_fix
-        score: -30
-        note: "不分析直接修复"
+    - event: tool_call
+      condition: tool == "read"
+      score: 20
+      note: 先读取文件确认
+    - event: skill_dispatch
+      condition: '"systematic-debugging" in line'
+      score: 40
+      note: 正确调用 debugging
+    - event: direct_code_fix
+      score: -30
+      note: 不分析直接修复
     min_score: 0
     max_score: 100
-
   pass_threshold: 70
   fail_threshold: 40
-
 examples:
-  - name: 正确路径
-    events:
-      - type: tool_call
-        tool: read
-        timestamp: "+2s"
-      - type: skill_invoked
-        skill: systematic-debugging
-        timestamp: "+4s"
-    score: 85
-    verdict: PASS
+- name: 正确路径
+  events:
+  - type: tool_call
+    tool: read
+    timestamp: +2s
+  - type: skill_invoked
+    skill: systematic-debugging
+    timestamp: +4s
+  score: 85
+  verdict: PASS

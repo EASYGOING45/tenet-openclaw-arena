@@ -5,93 +5,127 @@ import type { LeaderboardEntry } from "../types.js";
 const app = new Hono();
 
 app.get("/", (c) => {
-  // Get average score per model across all runs and tasks
-  const avgScores = db
-    .prepare(
-      `
-    SELECT
-      r.model_id,
-      m.name as model_name,
-      m.provider,
-      m.license_type,
-      m.input_price,
-      m.output_price,
-      m.context_length,
-      AVG(r.score) as score
+  const runGroup = c.req.query("run_group");
+  const capability = c.req.query("capability");
+
+  // Base WHERE clause
+  let whereClause = "WHERE 1=1";
+  const params: any[] = [];
+  if (runGroup) {
+    whereClause += " AND r.run_group = ?";
+    params.push(runGroup);
+  }
+
+  // Get all agents
+  const agents = db.prepare(
+    "SELECT * FROM agents WHERE is_active = 1"
+  ).all() as any[];
+  const agentMap: Record<string, any> = {};
+  for (const a of agents) agentMap[a.agent_id] = a;
+
+  // Average score per agent
+  let avgSql = `
+    SELECT r.agent_id, AVG(r.score) as score
     FROM runs r
-    JOIN models m ON r.model_id = m.id
-    GROUP BY r.model_id
-    ORDER BY score DESC
-  `
-    )
-    .all() as any[];
+    ${whereClause}
+    GROUP BY r.agent_id
+  `;
+  if (capability) {
+    avgSql = `
+      SELECT r.agent_id, AVG(r.score) as score
+      FROM runs r
+      JOIN tasks t ON r.task_id = t.task_id
+      ${whereClause} AND t.capability = ?
+      GROUP BY r.agent_id
+    `;
+    params.push(capability);
+  }
 
-  // Get vote_count (number of PASS results per model)
-  const voteCounts = db
-    .prepare(
-      `
-    SELECT model_id, COUNT(*) as vote_count
-    FROM runs
-    WHERE failure_label = 'PASS'
-    GROUP BY model_id
-  `
-    )
-    .all() as any[];
-  const voteCountMap: Record<string, number> = {};
-  for (const v of voteCounts) voteCountMap[v.model_id] = v.vote_count;
-
-  // Get rank_spread: "+X/-Y" = number of runs above/below median
-  const scores = avgScores.map((s) => s.score);
+  const avgScores = db.prepare(avgSql).all(...params) as any[];
+  const scores = avgScores.map((s) => s.score as number);
+  scores.sort((a, b) => b - a);
   const median = scores.length % 2 === 0
     ? (scores[scores.length / 2 - 1] + scores[scores.length / 2]) / 2
     : scores[Math.floor(scores.length / 2)];
 
-  // Get task-level details per model
-  const taskDetails = db
-    .prepare(
-      `
-    SELECT model_id, task_id, AVG(score) as score, MAX(failure_label) as failure_label
+  // PASS count per agent
+  let passSql = `
+    SELECT agent_id, COUNT(*) as vote_count
     FROM runs
-    GROUP BY model_id, task_id
-  `
-    )
-    .all() as any[];
-  const taskMap: Record<string, any[]> = {};
-  for (const t of taskDetails) {
-    if (!taskMap[t.model_id]) taskMap[t.model_id] = [];
-    taskMap[t.model_id].push({ task_id: t.task_id, score: t.score, failure_label: t.failure_label });
+    WHERE verdict = 'PASS'
+    ${runGroup ? " AND run_group = ?" : ""}
+    GROUP BY agent_id
+  `;
+  const passParams = runGroup ? [runGroup] : [];
+  const passCounts = db.prepare(passSql).all(...passParams) as any[];
+  const passMap: Record<string, number> = {};
+  for (const p of passCounts) passMap[p.agent_id] = p.vote_count;
+
+  // Task-level scores per agent
+  let taskSql = `
+    SELECT r.agent_id, r.task_id, t.title, t.capability, AVG(r.score) as score, MAX(r.verdict) as verdict
+    FROM runs r
+    JOIN tasks t ON r.task_id = t.task_id
+    ${whereClause}
+    GROUP BY r.agent_id, r.task_id
+  `;
+  if (capability) {
+    taskSql = `
+      SELECT r.agent_id, r.task_id, t.title, t.capability, AVG(r.score) as score, MAX(r.verdict) as verdict
+      FROM runs r
+      JOIN tasks t ON r.task_id = t.task_id
+      ${whereClause} AND t.capability = ?
+      GROUP BY r.agent_id, r.task_id
+    `;
   }
 
-  const leaderboard: LeaderboardEntry[] = avgScores.map((row, idx) => {
-    const rank = idx + 1;
-    const score = row.score as number;
-    let above = 0;
-    let below = 0;
-    for (const s of scores) {
-      if (s > score) above++;
-      if (s < score) below++;
-    }
-    const spread = `+${above}/-${below}`;
+  const taskDetails = db.prepare(taskSql).all(...params) as any[];
+  const taskMap: Record<string, any[]> = {};
+  for (const t of taskDetails) {
+    if (!taskMap[t.agent_id]) taskMap[t.agent_id] = [];
+    taskMap[t.agent_id].push({
+      task_id: t.task_id,
+      title: t.title,
+      capability: t.capability,
+      score: Math.round(t.score * 100) / 100,
+      verdict: t.verdict,
+    });
+  }
 
-    return {
-      rank,
-      model_id: row.model_id,
-      model_name: row.model_name,
-      provider: row.provider,
-      license_type: row.license_type,
-      score: Math.round(score * 100) / 100,
-      vote_count: voteCountMap[row.model_id] || 0,
-      rank_spread: spread,
-      input_price: row.input_price,
-      output_price: row.output_price,
-      context_length: row.context_length,
-      tasks: (taskMap[row.model_id] || []).map((t) => ({
-        task_id: t.task_id,
-        score: Math.round(t.score * 100) / 100,
-        failure_label: t.failure_label,
-      })),
-    };
-  });
+  const leaderboard: LeaderboardEntry[] = avgScores
+    .sort((a, b) => (b.score as number) - (a.score as number))
+    .map((row, idx) => {
+      const rank = idx + 1;
+      const score = row.score as number;
+      let above = 0, below = 0;
+      for (const s of scores) {
+        if (s > score) above++;
+        if (s < score) below++;
+      }
+
+      const agent = agentMap[row.agent_id];
+      return {
+        rank,
+        agent_id: row.agent_id,
+        model_id: agent?.model_id ?? row.agent_id,
+        model_name: agent?.model_name ?? row.agent_id,
+        provider: agent?.provider ?? "unknown",
+        license_type: agent?.license_type ?? "unknown",
+        score: Math.round(score * 100) / 100,
+        vote_count: passMap[row.agent_id] || 0,
+        rank_spread: `+${above}/-${below}`,
+        input_price: agent?.input_price ?? null,
+        output_price: agent?.output_price ?? null,
+        context_length: agent?.context_length ?? null,
+        tasks: (taskMap[row.agent_id] || []).map((t) => ({
+          task_id: t.task_id,
+          title: t.title,
+          capability: t.capability,
+          score: t.score,
+          verdict: t.verdict,
+        })),
+      };
+    });
 
   return c.json({ leaderboard });
 });

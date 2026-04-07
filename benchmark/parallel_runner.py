@@ -30,6 +30,7 @@ from benchmark.scorer import score
 class TaskResult:
     """Result of a single agent × task run."""
     run_id: str
+    run_group: str
     agent_id: str
     task_id: str
     score: float
@@ -42,6 +43,7 @@ class TaskResult:
     def to_dict(self) -> dict[str, Any]:
         return {
             "run_id": self.run_id,
+            "run_group": self.run_group,
             "agent_id": self.agent_id,
             "task_id": self.task_id,
             "score": self.score,
@@ -64,7 +66,7 @@ def build_prompt(task: dict[str, Any]) -> str:
     return f"[SYSTEM]\n{system}\n\n[USER]\n{user}"
 
 
-def run_single_task(agent_id: str, task: dict[str, Any]) -> TaskResult:
+def run_single_task(agent_id: str, task: dict[str, Any], run_group: str) -> TaskResult:
     """
     Execute a single agent × task run and return the result.
 
@@ -120,6 +122,7 @@ def run_single_task(agent_id: str, task: dict[str, Any]) -> TaskResult:
 
     return TaskResult(
         run_id=run_id,
+        run_group=run_group,
         agent_id=agent_id,
         task_id=task_id,
         score=score_val,
@@ -135,20 +138,41 @@ async def run_benchmark_sweep(
     agents: list[str],
     tasks: list[dict[str, Any]],
     max_workers: int = 3,
+    run_group: str = "",
 ) -> list[TaskResult]:
     """
     Run all agent × task combinations in parallel.
 
     Uses ProcessPoolExecutor to parallelize across CPU cores.
+    Writes each result to SQLite immediately after completion.
     """
     results: list[TaskResult] = []
     jobs = [(agent_id, task) for agent_id in agents for task in tasks]
 
     loop = asyncio.get_event_loop()
 
+    def _write_result(result: TaskResult) -> None:
+        """Write a single result to SQLite (called in main process)."""
+        import sqlite3
+        db_path = _PROJECT_ROOT / "backend" / "arena.db"
+        conn = sqlite3.connect(str(db_path))
+        try:
+            conn.execute(
+                "INSERT OR REPLACE INTO runs "
+                "(run_id,run_group,agent_id,task_id,score,verdict,duration_ms,events,error,created_at) "
+                "VALUES (?,?,?,?,?,?,?,?,?,?)",
+                (result.run_id, result.run_group, result.agent_id, result.task_id,
+                 result.score, result.verdict, result.duration_ms,
+                 json.dumps(result.events, ensure_ascii=False),
+                 result.error, datetime.now(timezone.utc).isoformat()),
+            )
+            conn.commit()
+        finally:
+            conn.close()
+
     with ProcessPoolExecutor(max_workers=max_workers) as executor:
         futures = {
-            executor.submit(run_single_task, agent_id, task): (agent_id, task.get("task_id", "unknown"))
+            executor.submit(run_single_task, agent_id, task, run_group): (agent_id, task.get("task_id", "unknown"))
             for agent_id, task in jobs
         }
 
@@ -156,10 +180,12 @@ async def run_benchmark_sweep(
             agent_id, task_id = futures[future]
             try:
                 result = future.result()
+                _write_result(result)
                 results.append(result)
             except Exception as exc:
-                results.append(TaskResult(
+                result = TaskResult(
                     run_id=f"run_{_utc_ts()}",
+                    run_group=run_group,
                     agent_id=agent_id,
                     task_id=task_id,
                     score=0.0,
@@ -168,7 +194,9 @@ async def run_benchmark_sweep(
                     transcript="",
                     duration_ms=0,
                     error=str(exc),
-                ))
+                )
+                _write_result(result)
+                results.append(result)
 
     return results
 
@@ -199,7 +227,7 @@ async def run_benchmark(
         return {"run_id": run_label, "dry_run": True, "agents": agents, "total_tasks": len(tasks)}
 
     print(f"Starting benchmark: {len(agents)} agents × {len(tasks)} tasks = {len(agents)*len(tasks)} runs")
-    results = await run_benchmark_sweep(agents, tasks, max_workers=max_workers)
+    results = await run_benchmark_sweep(agents, tasks, max_workers=max_workers, run_group=run_label)
 
     # Persist full results
     output: dict[str, Any] = {

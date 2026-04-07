@@ -4,12 +4,13 @@ import { db } from "../db/index.js";
 const app = new Hono();
 
 app.get("/", (c) => {
-  const rows = db.prepare("SELECT * FROM models").all() as any[];
-  const models = rows.map((r) => ({
-    ...r,
-    is_codex_harness: r.is_codex_harness === 1,
-  }));
-  return c.json({ models });
+  const rows = db.prepare("SELECT * FROM agents WHERE is_active = 1").all() as any[];
+  return c.json({
+    agents: rows.map((r) => ({
+      ...r,
+      is_active: r.is_active === 1,
+    })),
+  });
 });
 
 export default app;

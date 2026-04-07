@@ -71,6 +71,14 @@ def _check_rule(rule: dict[str, Any], events: list[dict[str, Any]]) -> bool:
     rule_skill = rule.get("skill")
     rule_tool = rule.get("tool")
 
+    # Pre-count matching events so condition can use `count` variable
+    matching_count = sum(
+        1 for evt in events
+        if (not event_type or evt.get("type") == event_type)
+        and (rule_skill is None or evt.get("skill") == rule_skill)
+        and (rule_tool is None or evt.get("tool") == rule_tool)
+    )
+
     for evt in events:
         # Type match
         if event_type and evt.get("type") != event_type:
@@ -97,6 +105,8 @@ def _check_rule(rule: dict[str, Any], events: list[dict[str, Any]]) -> bool:
                     "line": evt.get("line") or "",
                     "source": evt.get("source") or "",
                     "content_preview": evt.get("content_preview") or "",
+                    # Inject total count of events matching this rule's type/tool/skill criteria
+                    "count": matching_count,
                 }
                 # Also allow checking rule-level fields
                 if not eval(condition, {"__builtins__": {}}, ctx):
@@ -139,6 +149,17 @@ def score_with_breakdown(
         if isinstance(raw_score, str):
             raw_score = float(raw_score.lstrip("+"))
 
+        # Pre-count matching events so condition can use `count` variable
+        rule_event = rule.get("event", "")
+        rule_skill = rule.get("skill")
+        rule_tool = rule.get("tool")
+        matching_count = sum(
+            1 for evt in events
+            if evt.get("type") == rule_event
+            and (rule_skill is None or evt.get("skill") == rule_skill)
+            and (rule_tool is None or evt.get("tool") == rule_tool)
+        )
+
         for evt in events:
             if evt.get("type") == rule.get("event"):
                 skill_ok = rule.get("skill") is None or evt.get("skill") == rule.get("skill")
@@ -150,6 +171,7 @@ def score_with_breakdown(
                         "tool": evt.get("tool") or "",
                         "type": evt.get("type") or "",
                         "line": evt.get("line") or "",
+                        "count": matching_count,
                     }
                     try:
                         cond_ok = eval(rule["condition"], {"__builtins__": {}}, ctx)

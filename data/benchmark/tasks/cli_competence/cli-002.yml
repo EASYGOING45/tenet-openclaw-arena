@@ -55,11 +55,11 @@ evaluation:
   scoring:
     rules:
       - event: exec_command
-        condition: "dist" in command or "build" in command
+        condition: '"dist" in command or "build" in command'
         score: +20
         note: "确认了构建产物存在"
       - event: exec_command
-        condition: "wrangler" in command
+        condition: '"wrangler" in command'
         score: +50
         note: "执行了 wrangler deploy"
       - event: deployment_output

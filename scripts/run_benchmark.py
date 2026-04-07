@@ -471,6 +471,40 @@ def orchestrate_benchmark(
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run the OpenClaw Model Arena benchmark.")
     parser.add_argument(
+        "--mode",
+        choices=["phase1", "phase2"],
+        default="phase1",
+        help="phase1: original JSON task + full run pipeline; phase2: YAML tasks + parallel sweep (default: phase1)",
+    )
+    parser.add_argument(
+        "--category",
+        type=str,
+        default=None,
+        help="[phase2] Filter YAML tasks by capability/dimension.",
+    )
+    parser.add_argument(
+        "--agents",
+        type=str,
+        default=None,
+        help="[phase2] Comma-separated agent IDs (default: arena-gpt54,arena-m27,main).",
+    )
+    parser.add_argument(
+        "--new-only",
+        action="store_true",
+        help="[phase2] Only run tasks not in existing results.",
+    )
+    parser.add_argument(
+        "--max-workers",
+        type=int,
+        default=3,
+        help="[phase2] Max parallel workers (default: 3).",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="[phase2] Show what would run without executing agents.",
+    )
+    parser.add_argument(
         "--workspace-root",
         type=Path,
         default=_workspace_root_from_project(PROJECT_ROOT),
@@ -543,6 +577,35 @@ def _build_parser() -> argparse.ArgumentParser:
 
 def main() -> None:
     args = _build_parser().parse_args()
+
+    # Phase 2: YAML-based parallel sweep
+    if args.mode == "phase2":
+        import asyncio
+        from benchmark.parallel_runner import run_benchmark as phase2_run_benchmark
+        from benchmark.parallel_runner import load_yaml_tasks
+
+        project_root = args.project_root
+        index_path = project_root / "data" / "benchmark" / "tasks" / "_index.yml"
+        all_tasks = load_yaml_tasks(index_path)
+
+        if args.category:
+            all_tasks = [t for t in all_tasks if t.get("capability") == args.category]
+
+        agents = args.agents.split(",") if args.agents else ["arena-gpt54", "arena-m27", "main"]
+
+        result = asyncio.run(
+            phase2_run_benchmark(
+                agents=agents,
+                tasks=all_tasks,
+                max_workers=args.max_workers,
+                output_dir=args.project_root / "output" / "benchmark_results",
+                dry_run=args.dry_run,
+            )
+        )
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return
+
+    # Phase 1: original JSON task pipeline
     site_output_path = args.site_output_path or (
         args.project_root / "data" / "site" / f"{args.run_label}-site-data.json"
     )

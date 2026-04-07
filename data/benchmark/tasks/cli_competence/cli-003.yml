@@ -46,7 +46,7 @@ evaluation:
   scoring:
     rules:
       - event: exec_command
-        condition: "install" in command
+        condition: '"install" in command'
         score: +50
         note: "执行了安装"
       - event: verification_command

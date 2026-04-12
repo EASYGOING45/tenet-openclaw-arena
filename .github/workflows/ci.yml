@@ -21,7 +21,7 @@ jobs:
         uses: astral-sh/setup-uv@v4
         with:
           enable-cache: true
-      - run: uv sync && uv pytest tests/ -v --tb=short
+      - run: uv run --with pytest tests/ -v --tb=short
 
   build-backend:
     name: Build Backend

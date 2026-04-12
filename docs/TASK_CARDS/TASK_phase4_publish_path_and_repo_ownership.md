@@ -48,7 +48,8 @@
 
 - [x] 明确 repo 归属决策 → 新仓库 `https://github.com/EASYGOING45/tenet-openclaw-arena`
 - [x] 明确发布目标 → Cloudflare Pages
-- [ ] GitHub Actions CI 配置
+- [x] GitHub Actions CI 配置 → ✅ 已推送并验证（Python 32 tests ✅ / Backend build ✅ / Frontend build+test ✅）
+- [ ] **阻塞：需手动配置 GitHub Secrets**：`CLOUDFLARE_API_TOKEN` + `CF_ACCOUNT_ID`
 - [ ] 全量 benchmark 运行（18任务 × 3 agents）
 - [ ] 飞书文档：题库说明/评测方法/模型计划
 

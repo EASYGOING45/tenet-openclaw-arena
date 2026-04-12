@@ -1,8 +1,10 @@
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
+import { fileURLToPath } from 'node:url'
+import { dirname, join } from 'node:path'
 
-const appSourcePath =
-  '/Users/golden-tenet/claw-spaces/Phoebe/Projects/openclaw-model-arena/app/src/App.vue'
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const appSourcePath = join(__dirname, 'App.vue')
 
 describe('App arena landing page', () => {
   it('keeps the page as a poster-style composition shell', () => {

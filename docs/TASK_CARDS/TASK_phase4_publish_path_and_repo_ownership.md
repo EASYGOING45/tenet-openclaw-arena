@@ -67,6 +67,13 @@
 - 2026-04-06 13:30 CST：执行 `scripts/project_execute.sh openclaw-model-arena`，docs 骨架检查通过。
 - 由于缺少独立 git / wrangler 配置，本次未进行有效 gh / Cloudflare 验证；该问题已上升为当前主阻塞。
 
+### 2026-04-12 17:30 CST（傍晚巡检）
+- ✅ Backend 健康确认：`curl /api/models` → 3 agents
+- ✅ Git clean，无待提交变更
+- ✅ wrangler.toml 已存在，CI deploy 配置正确
+- ⚠️ 阻塞不变：需用户在 GitHub Secrets 配置 `CLOUDFLARE_API_TOKEN` + `CF_ACCOUNT_ID`
+- 🔜 Secrets 就绪后 CI Deploy 自动恢复，随后触发全量 18-task × 3-agents benchmark
+
 ### 2026-04-12 13:30 CST（中段巡检）
 - ✅ 确认 Arena backend 仍在运行（`:3000`，`npm start`）
 - ✅ CI 已完整推送（4轮迭代），Test + Build 全部通过，Deploy 步骤因 Secrets 缺失而失败（预期）

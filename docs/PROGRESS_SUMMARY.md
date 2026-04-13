@@ -85,3 +85,15 @@
 ### Remaining Phase 4 Items
 1. User manually configures GitHub Secrets → unblocks CI Deploy + Cloudflare Pages
 2. Full 18-task benchmark run (3 agents × 18 tasks) once CI is fully green
+
+---
+## 巡检记录 — 2026-04-13 13:30 CST
+
+**Backend**: ✅ 运行正常（:3000，3 agents live）
+**Git**: ✅ 干净（commit `dd5a273`，无 uncommitted 变更）
+**CI**: ✅ Test+Build 全部通过 | ❌ Deploy 步骤 failure（secrets 缺失，符合预期）
+
+**Phase 4 阻塞状况**：无变化——仍等待用户在 GitHub 配置 `CLOUDFLARE_API_TOKEN` + `CF_ACCOUNT_ID`。
+配置路径：https://github.com/EASYGOING45/tenet-openclaw-arena/settings/secrets
+
+**次级项目 datong-skill**：无新变更，状态同上次巡检。

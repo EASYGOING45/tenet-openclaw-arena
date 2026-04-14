@@ -7,6 +7,11 @@ on:
     branches: [main]
   workflow_dispatch:
 
+env:
+  # Opt into Node.js 24 to avoid GitHub Actions Node.js 20 deprecation warnings
+  # (actions/checkout@v4 and actions/setup-node@v4 default to Node 20 on the runner)
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   test-python:
     name: Python Tests

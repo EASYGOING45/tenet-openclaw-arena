@@ -67,6 +67,24 @@
 - 2026-04-06 13:30 CST：执行 `scripts/project_execute.sh openclaw-model-arena`，docs 骨架检查通过。
 - 由于缺少独立 git / wrangler 配置，本次未进行有效 gh / Cloudflare 验证；该问题已上升为当前主阻塞。
 
+### 2026-04-14 17:30 CST（中段巡检）
+- ✅ Backend 健康确认：`curl /api/models` → 3 agents（arena-m27, arena-k2p5, arena-gpt54）
+- ✅ Git clean，最新 commit `227c169`（新增 Node.js 24 opt-in）
+- ✅ Python tests: 32 passed | Frontend tests: 5 passed | Build: ✅
+- ✅ wrangler.toml 存在（`name = "tenet-openclaw-arena"`, `pages_build_output_dir = "app/dist"`）
+- ✅ **本次新修复**：CI workflow 添加 `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true`，消除 Node.js 20 deprecation warnings（commit `227c169` 已推送，CI 正在运行 #24391662222）
+- ⚠️ 阻塞不变：需用户在 GitHub Secrets 配置 `CLOUDFLARE_API_TOKEN` + `CF_ACCOUNT_ID`
+- 🔜 Secrets 就绪后 CI Deploy 自动恢复，随后触发全量 18-task × 3-agents benchmark
+
+### 2026-04-15 09:30 CST（早间巡检）
+- ✅ Backend 健康确认：`curl /api/models` → 3 agents（arena-m27, arena-k2p5, arena-gpt54）✅
+- ✅ Git 状态：工作区干净，最新 commit `227c169`（无 uncommitted 变更，仅有 staged 检查结果）
+- ✅ Python tests: 32 passed | Frontend tests: 5 passed | Build: ✅
+- ✅ CI 最新运行（#24391662222）结果：Test+Build ✅，Deploy ❌（secrets 缺失，符合预期）
+- ✅ wrangler.toml 存在（`name = "tenet-openclaw-arena"`, `pages_build_output_dir = "app/dist"`）
+- ⚠️ 阻塞不变：需用户在 GitHub Secrets 配置 `CLOUDFLARE_API_TOKEN` + `CF_ACCOUNT_ID`
+- 🔜 Secrets 就绪后 CI Deploy 自动恢复，随后触发全量 18-task × 3-agents benchmark
+
 ### 2026-04-12 17:30 CST（傍晚巡检）
 - ✅ Backend 健康确认：`curl /api/models` → 3 agents
 - ✅ Git clean，无待提交变更

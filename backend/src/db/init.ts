@@ -162,8 +162,11 @@ for (const group of runGroups) {
 }
 
 console.log("✅ Database initialized with seed data:");
-console.log(`   - Models: ${db.prepare("SELECT COUNT(*) as c FROM models").get().c}`);
-console.log(`   - Tasks: ${db.prepare("SELECT COUNT(*) as c FROM tasks").get().c}`);
-console.log(`   - Runs: ${db.prepare("SELECT COUNT(*) as c FROM runs").get().c}`);
+const modelCount = (db.prepare("SELECT COUNT(*) as c FROM models").get() as {c:number}).c;
+const taskCount = (db.prepare("SELECT COUNT(*) as c FROM tasks").get() as {c:number}).c;
+const runCount = (db.prepare("SELECT COUNT(*) as c FROM runs").get() as {c:number}).c;
+console.log(`   - Models: ${modelCount}`);
+console.log(`   - Tasks: ${taskCount}`);
+console.log(`   - Runs: ${runCount}`);
 
 db.close();

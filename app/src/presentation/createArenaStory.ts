@@ -98,28 +98,28 @@ const DIMENSION_LABELS: Record<string, string> = {
 
 const FAILURE_LABELS: Record<string, { label: string; description: string; priority: number }> = {
   fake_tool_call_text: {
-    label: '光说不练',
-    description: '模型输出了工具调用的样子，但实际没有真正调。',
+    label: '文本化工具调用',
+    description: '模型看起来像在工作，其实只是把工具动作打印成文本。',
     priority: 100,
   },
   empty_tool_args: {
-    label: '参数残缺',
-    description: '工具调用发出了，但关键参数是空的，执行链在这里就断了。',
+    label: '空参数工具调用',
+    description: '工具事件被发出，但关键参数缺失，执行链条会直接断开。',
     priority: 80,
   },
   run_timeout: {
-    label: '跑超时了',
-    description: '思路方向可能没问题，但没在规定时间内跑完。',
+    label: '运行超时',
+    description: '思路不一定错，但链路没有在 runtime 时限内收束。',
     priority: 75,
   },
   needs_reprompt: {
-    label: '半路卡住',
-    description: '模型在中间步骤停了，需要再推一下才能继续。',
+    label: '需要二次催促',
+    description: '模型会在半路停住，需要额外提示才能继续。',
     priority: 60,
   },
   delegate_recovery: {
-    label: '委派后自救',
-    description: '委派出去的东西没跑回来，它自己去补了。',
+    label: '委派后补救完成',
+    description: '首轮委派并不稳，但它有一定自救和回收残局的能力。',
     priority: 40,
   },
 }
@@ -193,7 +193,7 @@ function excerpt(run: ArenaRun): string {
 function failureMeta(tag: string): { label: string; description: string; priority: number } {
   return FAILURE_LABELS[tag] ?? {
     label: tag,
-    description: '这个 failure 还需要结合 transcript 才能准确定位。',
+    description: '这个 failure tag 已进入归一化结果，需要结合 transcript 一起读。',
     priority: 0,
   }
 }
@@ -243,12 +243,12 @@ function modelSignal(model: ScoreboardModelRow, index: number, runs: ArenaRun[])
 
   if (index === 0) {
     return topRisk
-      ? `主位可用，但要持续盯住 ${topRisk} 这一类风险。`
-      : '主位候选，故障密度低，适合站在最前排。'
+      ? `主执行位可用，但要持续盯住 ${topRisk} 这一类风险。`
+      : '主执行位候选，故障密度低，适合站在最前排。'
   }
 
   if (index === 1) {
-    return '备用，适合接管需要更稳输出的链路。'
+    return '高质量后备，适合接管需要更稳文案或人工复核的链路。'
   }
 
   return topRisk
@@ -314,7 +314,7 @@ export function createArenaStory(siteData: SiteData): ArenaStory {
       average: formatScore(model.averageScore),
       passRate: formatPercent(model.passRate),
       leadDimension: lead,
-      stance: index === 0 ? '主位' : index === 1 ? '备用' : '观察位',
+      stance: index === 0 ? '主执行位' : index === 1 ? '高质量后备' : '观察位',
       signal: modelSignal(model, index, modelRuns(siteData, model.model.slug)),
     }
   })
@@ -389,8 +389,8 @@ export function createArenaStory(siteData: SiteData): ArenaStory {
     .join(' ')
 
   const heroSummary = champion && runnerUp
-    ? `${champion.model.name} 在多个真实任务链路上站住了，${runnerUp.model.name} 作为备用选项表现稳定。把它们扔进真实任务里，看的不是谁更会说，而是谁断链少、谁收得回来。`
-    : '跑完一批任务后，这里会自动生成模型排名的现场解读。'
+    ? `${champion.model.name} 现在更像主执行位，${runnerUp.model.name} 更适合放在高质量后备。真正的差距不在于谁更会说，而在于谁更少假调用、更少断链、更多把任务真正跑完。`
+    : '等待完整样本落地后，页面会自动生成真正的主位建议。'
 
   const verdictStage: PretextStage = {
     headline: champion?.model.name ?? 'Runtime',
@@ -401,23 +401,23 @@ export function createArenaStory(siteData: SiteData): ArenaStory {
 
   const verdict: VerdictBlock = champion
     ? {
-        recommendation: `主位：${champion.model.name}。${runnerUp?.model.name ?? '更多样本待入'} 作为备用。`,
-        callout: `${champion.model.name} 靠的不是最会说，而是断链少、收得回来。`,
-        summary: '选模型别只看对话质感。看 failure tag、恢复能力、委派链路——这些才是生产环境里真正会发生的事。',
+        recommendation: `主执行位建议 ${champion.model.name}，把 ${runnerUp?.model.name ?? '等待更多样本'} 留作高质量后备。`,
+        callout: `${champion.model.name} 站上主位，不是因为更会说，而是因为更能把动作真正跑完。`,
+        summary: '选型时别再只看对话质感。把 failure tag、恢复能力、委派链路和验证诚实度一起摊开，才配谈生产环境主模型。',
         manifesto: [
-          `主位：${champion.model.name}`,
-          `备用：${runnerUp?.model.name ?? '等待更多样本'}`,
+          `主执行位：${champion.model.name}`,
+          `高质量后备：${runnerUp?.model.name ?? '等待更多样本'}`,
           `首要风险：${failureDossier[0]?.label ?? '等待更多样本'}`,
         ],
         stage: verdictStage,
       }
     : {
-        recommendation: '数据还不够，先跑几轮再说。',
-        callout: '暂无足够的运行样本，不下结论。',
-        summary: '把任务跑完，数据自然会长出来。',
+        recommendation: '等待更多 benchmark 样本后再生成主位建议。',
+        callout: '当前证据不足，暂不下结论。',
+        summary: '页面已准备好，但现在还没有足够多的现场运行记录。',
         manifesto: [
-          '主位：待定',
-          '备用：待定',
+          '主执行位：待定',
+          '高质量后备：待定',
           '首要风险：待补样本',
         ],
         stage: verdictStage,
@@ -431,19 +431,20 @@ export function createArenaStory(siteData: SiteData): ArenaStory {
 
   return {
     navLinks: [
-      { href: '#hero', label: '首页' },
-      { href: '#ranking', label: '排位' },
-      { href: '#tasks', label: '任务' },
-      { href: '#failures', label: '风险' },
-      { href: '#evidence', label: '记录' },
+      { href: '#hero', label: 'Poster' },
+      { href: '#ranking', label: 'Ranking' },
+      { href: '#tasks', label: 'Tasks' },
+      { href: '#failures', label: 'Failures' },
+      { href: '#evidence', label: 'Evidence' },
+      { href: '#verdict', label: 'Verdict' },
     ],
-    rankingSectionTitle: '按平均分排列。点击可看详情。',
-    taskSectionTitle: '每道题的得分和通过情况。',
-    failureSectionTitle: '所有模型共同遇到的失败模式。',
-    evidenceSectionTitle: '随机抽样六条原始记录，原文呈现。',
+    rankingSectionTitle: '把模型排位做成节目单，而不是一组互相长得一样的分数卡。',
+    taskSectionTitle: '单看综合分不够，必须拆回具体任务，看谁在什么链路里真正站住。',
+    failureSectionTitle: '真正会伤人的不是低分本身，而是这些会在真实链路里反复出现的失败模式。',
+    evidenceSectionTitle: '不要只听总结，去看 transcript、score 和 failure label 如何在同一条样本里对齐。',
     hero: {
-      kicker: 'OpenClaw Model Arena',
-      headline: '模型现场实测，谁真正能打。',
+      kicker: 'OpenClaw Runtime Arena',
+      headline: '把模型放进执行现场，再决定谁配坐主位。',
       summary: heroSummary,
       manifesto: [
         'OPENCLAW MODEL ARENA',
@@ -452,24 +453,24 @@ export function createArenaStory(siteData: SiteData): ArenaStory {
       ],
       scoreRibbon: [
         {
-          label: '主位选手',
-          value: champion ? `${champion.model.name}` : '等待入场',
-          note: champion ? `均分 ${formatScore(champion.averageScore)} / ${formatPercent(champion.passRate)} 通过` : '暂无数据',
+          label: 'Champion',
+          value: champion ? `${champion.model.name} / ${formatScore(champion.averageScore)}` : '等待数据',
+          note: champion ? `${formatPercent(champion.passRate)} pass rate` : '需要更多样本',
         },
         {
-          label: '备用选手',
-          value: runnerUp ? `${runnerUp.model.name}` : '等待入场',
-          note: runnerUp ? `均分 ${formatScore(runnerUp.averageScore)} / ${formatPercent(runnerUp.passRate)} 通过` : '暂无数据',
+          label: 'Backup',
+          value: runnerUp ? `${runnerUp.model.name} / ${formatScore(runnerUp.averageScore)}` : '等待数据',
+          note: runnerUp ? `${formatPercent(runnerUp.passRate)} pass rate` : '需要更多样本',
         },
         {
-          label: '本次样本',
-          value: `${siteData.runs.length} 条`,
-          note: `${rankedModels.length} 个模型`,
+          label: 'Runs',
+          value: `${siteData.runs.length} live samples`,
+          note: `${rankedModels.length} tracked models`,
         },
         {
-          label: '首要风险',
-          value: failureDossier[0]?.label ?? '暂无',
-          note: failureDossier[0] ? `影响 ${failureDossier[0].count} 条` : '等待更多样本',
+          label: 'Primary Risk',
+          value: failureDossier[0]?.label ?? 'Signals pending',
+          note: failureDossier[0] ? `${failureDossier[0].count} tagged runs` : '等待更多样本',
         },
       ],
       stageWords,

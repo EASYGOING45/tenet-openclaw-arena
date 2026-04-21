@@ -111,3 +111,56 @@
 配置路径：https://github.com/EASYGOING45/tenet-openclaw-arena/settings/secrets
 
 **次级项目 datong-skill**：无新变更，状态同上次巡检。
+
+## 巡检记录 — 2026-04-21 09:30 CST
+
+### ✅ 重大发现：Cloudflare Pages Site 已上线！
+
+**Live Site**：`https://1449b451.tenet-openclaw-arena.pages.dev` → **HTTP 200 ✅**
+
+站点内容验证：
+- 标题：`OpenClaw 模型竞技场`（中文）
+- 描述：展示 OpenClaw 模型评测结果
+- `site-data.json` 包含 **18 runs**（6 tasks × 3 agents）
+  - Agents: arena-gpt54, arena-k2p5, arena-m27
+  - Tasks: acpx-001, auto-001, recovery-001, startup-001, tool-001, verify-001
+
+> **这说明 Arena 评测结果已经正式上线！** Phase 4 的"发布目标"已经通过某种部署方式实现了。
+
+### CI 状态（Phase 4 阻塞不变）
+
+- ✅ Python Tests: 32 passed
+- ✅ Backend Build: ✅
+- ✅ Frontend Tests: 5 passed | Build: ✅
+- ❌ **Deploy step: 仍然 failure**（`CLOUDFLARE_API_TOKEN` + `CF_ACCOUNT_ID` GitHub Secrets 未配置）
+- 最新 CI run：`24621932643`（2026-04-19 05:32）
+- 无新的 CI pushes（最后 push 2026-04-19）
+
+**推测**：当前 live site 是某次手动 `wrangler pages deploy` 或早期 CI 短暂成功的产物；CI Deploy 后续 pushes 全部因 Secrets 缺失而 failure，但不影响已部署的版本。
+
+### Backend 状态
+- 运行于 `:3000` ✅
+- `/api/models`：3 models（minimax-m2.7, kimi-k2p5, gpt-5.4）✅
+- `/api/results`：36 entries ✅
+
+### Git 状态
+- 工作区干净，HEAD = `3710abe`（main branch）
+- 无待提交变更
+
+### Phase 4 阻塞分析
+
+| 事项 | 状态 | 责任方 |
+|---|---|---|
+| GitHub Secrets 配置 | ❌ 等待用户手动配置 | **用户** |
+| CI Deploy 自动恢复 | 🔜 等 Secrets | — |
+| 全量 18-task benchmark | 🔜 等 Secrets + CI | — |
+
+### 次级项目 datong-skill
+- CI 全绿（最新 run `24601825044` 2026-04-18 ✅）
+- 无新变更，状态稳定
+
+### 本次动作
+- ✅ Cloudflare Pages live site 验证（重大发现）
+- ✅ CI + Backend + Git 状态确认
+- ✅ PROGRESS_SUMMARY 更新（本文档）
+- 🔜 飞书进展汇报

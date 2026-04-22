@@ -67,6 +67,17 @@
 - 2026-04-06 13:30 CST：执行 `scripts/project_execute.sh openclaw-model-arena`，docs 骨架检查通过。
 - 由于缺少独立 git / wrangler 配置，本次未进行有效 gh / Cloudflare 验证；该问题已上升为当前主阻塞。
 
+### 2026-04-22 13:30 CST（中段巡检）
+- ✅ Git push 成功（`41d8d69..06e1fba`，网络问题已通过 `GIT_TERMINAL_PROMPT=0` 解决）
+- ✅ 新 CI run 已触发（`2026-04-22T05:36:50Z`，queued）
+- ✅ Live site：`https://1449b451.tenet-openclaw-arena.pages.dev` → HTTP 200 ✅
+- ✅ Backend：`:3000` 运行中，`/api/models` → 3 models ✅，`/api/tasks` → 6 tasks ✅
+- ✅ datong-skill：CI 全绿（最新 `24601825044` 2026-04-18），无新变更
+- ⚠️ **Phase 4 唯一阻塞（不变）**：GitHub Secrets `CLOUDFLARE_API_TOKEN` + `CF_ACCOUNT_ID` 未配置
+- 🔜 Secrets 就绪后 CI Deploy 自动恢复 → 全量 benchmark
+
+---
+
 ### 2026-04-21 17:30 CST（中段巡检）
 - ✅ Live site 验证：`https://1449b451.tenet-openclaw-arena.pages.dev` → HTTP 200 ✅
 - ✅ Backend 健康确认：`:3000` 运行中，`/api/models` → 3 models（minimax-m2.7, kimi-k2p5, gpt-5.4）✅，`/api/tasks` → 6 tasks ✅，`/api/results` → ✅

@@ -67,6 +67,19 @@
 - 2026-04-06 13:30 CST：执行 `scripts/project_execute.sh openclaw-model-arena`，docs 骨架检查通过。
 - 由于缺少独立 git / wrangler 配置，本次未进行有效 gh / Cloudflare 验证；该问题已上升为当前主阻塞。
 
+### 2026-04-22 17:30 CST（中段巡检）
+- ✅ Python Tests: 32 passed（本地 uv）
+- ✅ Frontend Build: ✅ success（app/dist）
+- ✅ Git: 工作区干净，HEAD = `62fd6e5`（无 uncommitted 变更）
+- ✅ Live site：`https://1449b451.tenet-openclaw-arena.pages.dev` → HTTP 200 ✅（2 weeks ago 最后更新）
+- ✅ Backend：`:3000` 运行中，`/api/models` → 3 models ✅
+- ✅ CI（run `24762157652`，2026-04-22 05:37）：Test+Build ✅，Deploy ❌
+- ✅ Deploy failure 根因确认：`##[error]Input required and not supplied: apiToken`（`cloudflare/pages-action@v1` 因 `CLOUDFLARE_API_TOKEN` 未配置而无法认证）
+- ⚠️ **Phase 4 唯一阻塞（不变）**：GitHub Secrets `CLOUDFLARE_API_TOKEN` + `CF_ACCOUNT_ID` 未配置
+- 🔜 Secrets 就绪后 CI Deploy 自动恢复 → 触发全量 18-task × 3-agents benchmark
+
+---
+
 ### 2026-04-22 13:30 CST（中段巡检）
 - ✅ Git push 成功（`41d8d69..06e1fba`，网络问题已通过 `GIT_TERMINAL_PROMPT=0` 解决）
 - ✅ 新 CI run 已触发（`2026-04-22T05:36:50Z`，queued）

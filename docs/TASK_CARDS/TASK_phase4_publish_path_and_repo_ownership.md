@@ -67,14 +67,28 @@
 - 2026-04-06 13:30 CST：执行 `scripts/project_execute.sh openclaw-model-arena`，docs 骨架检查通过。
 - 由于缺少独立 git / wrangler 配置，本次未进行有效 gh / Cloudflare 验证；该问题已上升为当前主阻塞。
 
-### 2026-04-14 17:30 CST（中段巡检）
-- ✅ Backend 健康确认：`curl /api/models` → 3 agents（arena-m27, arena-k2p5, arena-gpt54）
-- ✅ Git clean，最新 commit `227c169`（新增 Node.js 24 opt-in）
-- ✅ Python tests: 32 passed | Frontend tests: 5 passed | Build: ✅
-- ✅ wrangler.toml 存在（`name = "tenet-openclaw-arena"`, `pages_build_output_dir = "app/dist"`）
-- ✅ **本次新修复**：CI workflow 添加 `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true`，消除 Node.js 20 deprecation warnings（commit `227c169` 已推送，CI 正在运行 #24391662222）
+### 2026-04-21 17:30 CST（中段巡检）
+- ✅ Live site 验证：`https://1449b451.tenet-openclaw-arena.pages.dev` → HTTP 200 ✅
+- ✅ Backend 健康确认：`:3000` 运行中，`/api/models` → 3 models（minimax-m2.7, kimi-k2p5, gpt-5.4）✅，`/api/tasks` → 6 tasks ✅，`/api/results` → ✅
+- ✅ Git 状态：工作区干净，HEAD = `41d8d69`（main branch），最新 commit `docs: add morning inspection record 2026-04-21 09:30 CST`
+- ✅ CI 最新运行（`24699408828`，2026-04-21 01:34）：Build Backend ✅ / Python Tests ✅ / Frontend Tests ✅ / Build Frontend ✅ / Deploy ❌（secrets 缺失）
+- ✅ CI workflow `ci.yml` 配置正确：`apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}` 和 `accountId: ${{ secrets.CF_ACCOUNT_ID }}` 均已正确配置在 Deploy step 中
+- ⚠️ **阻塞确认（唯一阻塞，不变）**：GitHub Secrets 中 `CLOUDFLARE_API_TOKEN` 和 `CF_ACCOUNT_ID` 未配置，导致 Deploy 步骤失败
+  - workflow YAML 配置本身无问题，无需修改 ci.yml
+  - 用户需在 https://github.com/EASYGOING45/tenet-openclaw-arena/settings/secrets 配置这两个 secret
+- 🔜 Secrets 就绪后 CI Deploy 自动恢复，随后可手动或 CI 触发全量 18-task × 3-agents benchmark
+
+---
+
+### 2026-04-21 09:30 CST（早间巡检）
+- ✅ Live site 验证：`https://1449b451.tenet-openclaw-arena.pages.dev` → HTTP 200 ✅
+- ✅ Backend 健康确认：`:3000` 运行中，`/api/models` → 3 agents ✅，`/api/results` → 36 entries ✅
+- ✅ Git 状态：工作区干净，最新 commit `41d8d69`
+- ✅ CI run `24699408828`：Build+Test ✅，Deploy ❌
+- ✅ 本次新发现 Deploy 失败根因：CI workflow 中 Deploy step 的 `apiToken` 输入缺失（实际是 Secrets 未配置，workflow 配置本身正确）
 - ⚠️ 阻塞不变：需用户在 GitHub Secrets 配置 `CLOUDFLARE_API_TOKEN` + `CF_ACCOUNT_ID`
-- 🔜 Secrets 就绪后 CI Deploy 自动恢复，随后触发全量 18-task × 3-agents benchmark
+- 🔜 飞书汇报（本次新发现的 Deploy 错误根因）
+- 📝 更新 memory
 
 ### 2026-04-15 09:30 CST（早间巡检）
 - ✅ Backend 健康确认：`curl /api/models` → 3 agents（arena-m27, arena-k2p5, arena-gpt54）✅

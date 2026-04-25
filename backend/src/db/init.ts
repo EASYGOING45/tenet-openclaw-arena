@@ -1,13 +1,30 @@
 import Database from "better-sqlite3";
 import { CREATE_TABLES_SQL } from "./schema.js";
+import { seedYamlTasks } from "./seed_yaml_tasks.js";
 import path from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DB_PATH = path.join(__dirname, "..", "..", "arena.db");
 
+// CLI args
+export const REINIT_TASKS_FLAG = process.argv.includes("--reinit-tasks");
+export const FULL_REINIT_FLAG = process.argv.includes("--full-reinit");
+
 const db = new Database(DB_PATH);
 db.pragma("journal_mode = WAL");
+
+// Migration: add capability column to tasks if missing (existing DBs)
+try {
+  db.exec("ALTER TABLE tasks ADD COLUMN capability TEXT DEFAULT NULL");
+  console.log("✅ Migrated: added capability column to tasks table");
+} catch (err: any) {
+  if (err.message?.includes("duplicate column name")) {
+    // Already migrated, fine
+  } else {
+    // Table might not exist yet, let CREATE_TABLES_SQL handle it
+  }
+}
 
 // Create tables
 db.exec(CREATE_TABLES_SQL);
@@ -28,10 +45,10 @@ for (const m of models) {
   insertModel.run(...m);
 }
 
-// Seed tasks
+// Seed tasks (legacy 6 tasks — capability is NULL for these)
 const insertTask = db.prepare(`
-  INSERT OR REPLACE INTO tasks (id, name, category, difficulty, description, scoring_criteria)
-  VALUES (?, ?, ?, ?, ?, ?)
+  INSERT OR REPLACE INTO tasks (id, name, category, difficulty, description, scoring_criteria, capability)
+  VALUES (?, ?, ?, ?, ?, ?, ?)
 `);
 
 const tasks = [
@@ -42,6 +59,7 @@ const tasks = [
     "hard",
     "用 loop 替代 lodash 包，实现以下函数：map、filter、reduce 等数组方法。",
     JSON.stringify({ style: 20, correctness: 80 }),
+    null, // legacy tasks have no capability/dimension
   ],
   [
     "readme-audit",
@@ -50,6 +68,7 @@ const tasks = [
     "medium",
     "审查并改进 README 文档的完整性、可读性和准确性。",
     JSON.stringify({ clarity: 30, completeness: 40, accuracy: 30 }),
+    null,
   ],
   [
     "context-summary",
@@ -58,6 +77,7 @@ const tasks = [
     "medium",
     "根据提供的长文本提取关键信息并生成简洁摘要。",
     JSON.stringify({ relevance: 40, conciseness: 30, accuracy: 30 }),
+    null,
   ],
   [
     "json-extract",
@@ -66,6 +86,7 @@ const tasks = [
     "easy",
     "从复杂 JSON 结构中提取指定字段并返回结构化结果。",
     JSON.stringify({ correctness: 70, edge_cases: 20, style: 10 }),
+    null,
   ],
   [
     "file-search",
@@ -74,6 +95,7 @@ const tasks = [
     "medium",
     "在指定目录树中搜索匹配条件的文件并返回路径列表。",
     JSON.stringify({ accuracy: 50, efficiency: 30, completeness: 20 }),
+    null,
   ],
   [
     "multi-step-reasoning",
@@ -82,11 +104,36 @@ const tasks = [
     "hard",
     "解决需要多步推理的复杂逻辑问题，每步需要正确的子结论支撑。",
     JSON.stringify({ reasoning: 50, correctness: 40, clarity: 10 }),
+    null,
   ],
 ];
 
 for (const t of tasks) {
   insertTask.run(...t);
+}
+
+// Optionally seed YAML tasks on top (Phase 2 task corpus)
+if (REINIT_TASKS_FLAG) {
+  console.log("\n🔄 --reinit-tasks flag detected — seeding YAML Phase 2 tasks…");
+  seedYamlTasks();
+}
+
+// --full-reinit: nuke everything and reseed
+if (FULL_REINIT_FLAG) {
+  console.log("\n🔄 --full-reinit flag detected — dropping and recreating all tables…");
+  db.exec([
+    "DROP TABLE IF EXISTS runs",
+    "DROP TABLE IF EXISTS tasks",
+    "DROP TABLE IF EXISTS models",
+  ].join(";"));
+  db.exec(CREATE_TABLES_SQL);
+  // Re-insert models
+  for (const m of models) { insertModel.run(...m); }
+  // Re-insert legacy tasks
+  for (const t of tasks) { insertTask.run(...t); }
+  // Seed YAML tasks
+  seedYamlTasks();
+  console.log("✅ Full reinit complete");
 }
 
 // Seed runs (2 groups of runs)

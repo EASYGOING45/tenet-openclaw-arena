@@ -16,7 +16,8 @@ CREATE TABLE IF NOT EXISTS tasks (
   category TEXT NOT NULL,
   difficulty TEXT NOT NULL,
   description TEXT NOT NULL,
-  scoring_criteria TEXT NOT NULL
+  scoring_criteria TEXT NOT NULL,
+  capability TEXT DEFAULT NULL
 );
 
 CREATE TABLE IF NOT EXISTS runs (

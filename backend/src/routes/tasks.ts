@@ -8,15 +8,20 @@ app.get("/", (c) => {
   const tasks = rows.map((r) => {
     let scoring_criteria = null;
     try {
-      scoring_criteria = r.scoring_criteria && r.scoring_criteria !== "undefined" 
-        ? JSON.parse(r.scoring_criteria) 
+      scoring_criteria = r.scoring_criteria && r.scoring_criteria !== "undefined"
+        ? JSON.parse(r.scoring_criteria)
         : null;
     } catch {
       scoring_criteria = null;
     }
     return {
-      ...r,
+      id: r.id,
+      name: r.name,
+      category: r.category,   // = capability/dimension for YAML tasks
+      difficulty: r.difficulty,
+      description: r.description,
       scoring_criteria,
+      capability: r.capability ?? r.category, // fallback to category
     };
   });
   return c.json({ tasks });

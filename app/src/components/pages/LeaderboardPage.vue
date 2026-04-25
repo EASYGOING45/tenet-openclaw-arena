@@ -120,7 +120,35 @@ const activeLicense = ref('All')
 const categories = ['All', 'Coding', 'Reasoning', 'Tool Use', 'Agentic']
 const licenses = ['All', 'Proprietary', 'Open Source']
 
-const filteredLeaderboard = computed(() => leaderboard.value)
+const filteredLeaderboard = computed(() => {
+  return leaderboard.value.filter((entry) => {
+    const matchLicense =
+      activeLicense.value === 'All' ||
+      entry.license_type === activeLicense.value
+
+    // Category filter: infer from task mix (Coding / Reasoning / Tool Use / Agentic / Delegation)
+    // Based on which category of tasks this model scored highest in.
+    const taskCategories = entry.tasks?.map((t) => {
+      if (!t.task_id) return 'Other'
+      const id = t.task_id
+      if (id.startsWith('skill-') || id.startsWith('acpx-') || id.startsWith('verify-') || id.startsWith('startup-')) return 'Agentic'
+      if (id.startsWith('delegation-')) return 'Delegation'
+      if (id.startsWith('tool-') || id.startsWith('cli-')) return 'Tool Use'
+      if (id.startsWith('computer-')) return 'Computer Use'
+      if (id.startsWith('self-')) return 'Self-Correction'
+      if (id.startsWith('coding-') || id.startsWith('json-')) return 'Coding'
+      if (id.startsWith('context-') || id.startsWith('multi-')) return 'Reasoning'
+      if (id === 'file-search' || id === 'readme-audit') return 'Tool Use' // legacy tasks
+      return 'Other'
+    }) ?? []
+
+    const uniqueCategories = [...new Set(taskCategories)]
+    const matchCategory =
+      activeCategory.value === 'All' || uniqueCategories.includes(activeCategory.value)
+
+    return matchLicense && matchCategory
+  })
+})
 
 function formatContext(n: number): string {
   if (n >= 1000000) return `${(n / 1000000).toFixed(0)}M`

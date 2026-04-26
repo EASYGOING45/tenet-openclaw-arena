@@ -78,7 +78,7 @@ class TestTasksEndpoint:
     def test_task_capability_matches_category(self):
         """For YAML tasks, capability should equal category (both set to dimension)."""
         data = api_get("/api/tasks")
-        yaml_tasks = [t for t in data["tasks"] if "-" in t["id"] and t["id"][0].isalpha()]
+        yaml_tasks = [t for t in data["tasks"] if t.get("capability") is not None]
         for task in yaml_tasks:
             assert task["capability"] == task["category"], (
                 f"Task {task['id']}: capability={task['capability']} != category={task['category']}"

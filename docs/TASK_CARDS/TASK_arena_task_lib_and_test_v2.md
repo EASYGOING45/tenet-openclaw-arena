@@ -74,16 +74,16 @@
 ## ✅ 验收标准
 
 ### 目标 A
-- [ ] `curl http://localhost:3000/api/tasks` 返回 18 个任务
-- [ ] 每个任务含 `id`、`name`、`category`、`difficulty`、`capability`（维度）字段
-- [ ] `python3 scripts/sync_yaml_tasks_to_db.py` 运行成功，无报错
-- [ ] Backend 重启后数据持久化正常
+- [x] `curl http://localhost:3000/api/tasks` 返回 24 个任务（含 18 YAML 任务）
+- [x] 每个任务含 `id`、`name`、`category`、`difficulty`、`capability`（维度）字段
+- [x] `python3 scripts/sync_yaml_tasks_to_db.py` 运行成功，无报错
+- [x] Backend 重启后数据持久化正常
 
 ### 目标 B
-- [ ] `uv run pytest tests/test_api_routes.py -v` 通过 ≥ 5 个用例
-- [ ] `uv run pytest tests/test_scoring.py -v` 所有现有测试 + 新增 edge case 通过
-- [ ] `npm test`（app 目录）全部通过
-- [ ] `LeaderboardPage` 筛选器：切换 Category → 表格数据正确过滤
+- [x] `uv run pytest tests/test_api_routes.py -v` — 18 个 API 集成测试全部通过
+- [x] `uv run pytest tests/test_scoring.py -v` — 所有现有测试 + 新增 7 个 edge case 通过
+- [x] `npm test`（app 目录）全部通过 — 32 个前端测试（含新增 27 个筛选器测试）
+- [x] `LeaderboardPage` 筛选器：License + Category 双重筛选真正生效
 
 ---
 

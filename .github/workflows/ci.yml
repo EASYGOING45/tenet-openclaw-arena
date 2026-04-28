@@ -29,7 +29,7 @@ jobs:
           cd backend && npm ci && npm run build
       - name: Initialize Database
         run: |
-          cd backend && npm run db:init
+          cd backend && npm run db:init && npm run db:seed-yaml
       - name: Start Backend
         run: |
           cd backend && npm start &

@@ -27,6 +27,9 @@ jobs:
       - name: Setup Backend
         run: |
           cd backend && npm ci && npm run build
+      - name: Initialize Database
+        run: |
+          cd backend && npm run db:init
       - name: Start Backend
         run: |
           cd backend && npm start &

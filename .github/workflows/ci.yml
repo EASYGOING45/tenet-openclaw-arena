@@ -22,8 +22,19 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Install pytest
+      - name: Install Python deps
         run: pip install pytest --quiet
+      - name: Setup Backend
+        run: |
+          cd backend && npm ci
+      - name: Start Backend
+        run: |
+          cd backend && npm start &
+          for i in $(seq 1 30); do
+            curl -s http://localhost:3000/health && break
+            sleep 2
+          done
+          sleep 2
       - name: Run Python tests
         run: pytest tests/ -v --tb=short
 

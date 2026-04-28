@@ -329,3 +329,41 @@ Secrets 就绪后：CI Deploy 自动恢复 → 可 `workflow_dispatch` 触发全
 - 09:31 完成 PROGRESS_SUMMARY 更新（本文档）
 - 09:31 完成 memory 更新
 - 🔜 飞书进展汇报（feishu_im_user_message 受限，改为直接回复）
+
+---
+
+## 巡检记录 — 2026-04-28 下午巡检（13:30 CST）
+
+**项目状态：openclaw-model-arena — Phase 4 ✅ 功能完成，CI Deploy 等待 GitHub Secrets**
+
+| 检查项 | 结果 |
+|--------|------|
+| Live site（wrangler 直部署） | ✅ `https://aa885e68.tenet-openclaw-arena.pages.dev` HTTP 200 |
+| Backend | ✅ `:3000` 运行中（cwd=backend/），`/api/tasks` → 24 tasks（6 legacy + 18 YAML） |
+| Arena Git | ✅ 干净，HEAD = `9159988`（本轮 commit pending sweep records） |
+| Python Tests | ✅ 57 passed（上次 CI） |
+| Frontend Tests | ✅ 32 passed（上次 CI） |
+| CI | ✅ Build+Test 全绿，❌ Deploy failure（Secrets 缺失，符合预期） |
+
+**本轮 CI 连续 3 次失败（run 25029354270 / 25029302188 / 25029221495）**：
+- 原因：`CLOUDFLARE_API_TOKEN` 未配置 → `apiToken` required 报错
+- CI 日志：Build+Test 全部通过，Deploy 步骤 `##[error]Input required and not supplied: apiToken`
+- 最新 CI SHA：`261679c`（fix(CI): seed YAML task corpus after db:init）
+
+**Phase 4 唯一阻塞（不变，需用户手动）**：
+- GitHub Secrets `CLOUDFLARE_API_TOKEN` + `CF_ACCOUNT_ID`（值：e33179c5db6f63224f12b82f809d0f1e）
+- 配置路径：https://github.com/EASYGOING45/tenet-openclaw-arena/settings/secrets
+- Secrets 就绪后：CI Deploy 自动恢复 → 可触发全量 18-task × 3-agent benchmark
+
+**次级项目 datong-skill**：
+- CI 全绿（最新 run `25029174323`，SHA `29048b3`）
+- v0.2.0 剩余最后一项：`publish-clawhub`（需 clawhub.com 账号确认）
+- 所有功能任务已完成，CI+Deploy 正常
+
+**动作用时线**：
+- 13:30 开始巡检
+- 13:31 完成 site/backend/CI/Git 验证
+- 13:32 发现 CI 连续 3 次 failure（Deploy apiToken 缺失）
+- 13:33 完成 Arena 本地 pending commit（commit `9159988`）
+- 13:34 完成 PROGRESS_SUMMARY 更新（本文档）
+- 🔜 飞书进展汇报

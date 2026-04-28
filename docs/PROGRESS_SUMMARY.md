@@ -216,3 +216,116 @@
 - 17:31 完成 site/backend/CI/Git 验证
 - 17:32 完成 PROGRESS_SUMMARY 更新
 - 17:33 完成 memory 更新
+
+---
+
+## 巡检记录 — 2026-04-26 下午巡检（13:30 CST）
+
+**项目状态：openclaw-model-arena — Phase 4 ✅ 功能完成，CI Deploy 等待 GitHub Secrets**
+
+| 检查项 | 结果 |
+|--------|------|
+| Live site（wrangler 直部署） | ✅ `https://aa885e68.tenet-openclaw-arena.pages.dev` HTTP 200 |
+| Backend | ✅ `:3000` 运行中，`/api/results` → 36 entries，3 models |
+| Arena Git | ✅ 干净，HEAD = `9c77724`（TASK v2 完成） |
+| Python 测试 | ✅ 18/18（API routes + scoring edge cases） |
+| 前端测试 | ✅ 32/32（含 Leaderboard 筛选器 27 个新测试） |
+| CI | ✅ Build+Test 全绿，❌ Deploy failure（Secrets 缺失，符合预期） |
+
+**TASK v2 完成情况（目标 A + B 均验收通过）：**
+- ✅ 18 个 YAML 任务入 SQLite（共 24 tasks，legacy 6 + YAML 18）
+- ✅ `capability` + `difficulty` 字段从 YAML metadata 正确返回
+- ✅ API routes 测试 18/18 通过
+- ✅ Scoring edge cases 7 个新测试通过
+- ✅ LeaderboardPage License + Category 筛选真正生效
+
+**Phase 4 阻塞状况（不变）：**
+GitHub Secrets 仍未配置，CI Deploy 步骤无法自动完成。
+配置路径：https://github.com/EASYGOING45/tenet-openclaw-arena/settings/secrets
+- `CLOUDFLARE_API_TOKEN`
+- `CF_ACCOUNT_ID`（值：e33179c5db6f63224f12b82f809d0f1e）
+
+Secrets 就绪后：CI Deploy 自动恢复 → 可 `workflow_dispatch` 触发全量 18-task × 3-agent benchmark
+
+**次级项目 datong-skill：** 无新变更，CI 全绿，状态稳定
+
+**发现次要项：** Phoebe 父仓库有几处 Arena 相关未跟踪文件（`App.test.ts` 路径修复、`LeaderboardPage.vue` 筛选逻辑、`yaml` npm 包），Arena 子仓库本身 `9c77724` 全部包含且干净，不影响线上状态。
+
+**动作用时线：**
+- 13:30 开始巡检
+- 13:31 完成 site/backend/CI/Git 验证
+- 13:32 完成 TASK v2 任务卡状态更新
+- 13:33 完成 PROGRESS_SUMMARY 更新（本文档）
+- 🔜 飞书进展汇报
+
+---
+
+## 巡检记录 — 2026-04-26 晚间巡检（17:30 CST）
+
+**项目状态：openclaw-model-arena — Phase 4 功能完成，CI Deploy 等待 GitHub Secrets**
+
+| 检查项 | 结果 |
+|--------|------|
+| Live site（wrangler 直部署） | ✅ `https://aa885e68.tenet-openclaw-arena.pages.dev` HTTP 200 |
+| Backend | ✅ `:3000` 运行中，`/api/tasks` → 24 tasks（6 legacy + 18 YAML） |
+| Arena Git | ✅ 干净，HEAD = `5141eba`（本轮修复 commit） |
+| Python Tests | ✅ 18/18（刚修复 test_task_capability_matches_category 逻辑） |
+| Frontend Tests | ✅ 32/32 |
+| Frontend Build | ✅ 成功（vite build，322ms） |
+| CI | ✅ Build+Test 全绿，❌ Deploy failure（Secrets 缺失，符合预期） |
+
+**本轮新增修复**：
+- `tests/test_api_routes.py` - `test_task_capability_matches_category` 筛选逻辑修复：使用 `capability != null` 而非旧式 ID pattern（legacy 任务 capability=None 会误命中旧断言）
+- 修复后 18/18 ✅，已 push `5141eba`
+
+**Phase 4 唯一阻塞（不变，需用户手动）**：
+- GitHub Secrets `CLOUDFLARE_API_TOKEN` + `CF_ACCOUNT_ID`（值：e33179c5db6f63224f12b82f809d0f1e）
+- 配置路径：https://github.com/EASYGOING45/tenet-openclaw-arena/settings/secrets
+- Secrets 就绪后：CI Deploy 自动恢复 → 可触发全量 18-task × 3-agent benchmark
+
+**动作用时线**：
+- 17:30 开始巡检
+- 17:35 完成 backend 重启与 DB 修复（DB path 从 backend/ 切换到项目 root）
+- 17:36 完成 Python/Frontend 测试（发现 test_task_capability_matches_category 失败）
+- 17:37 完成测试修复并 push commit `5141eba`
+- 17:38 完成 docs/PROGRESS_SUMMARY 更新
+- 17:39 完成 memory 更新
+- 🔜 飞书进展汇报
+
+---
+
+## 巡检记录 — 2026-04-27 早间巡检（09:30 CST）
+
+**项目状态：openclaw-model-arena — Phase 4 ✅ 功能完成，CI Deploy 等待 GitHub Secrets**
+
+| 检查项 | 结果 |
+|--------|------|
+| Live site（wrangler 直部署） | ✅ `https://aa885e68.tenet-openclaw-arena.pages.dev` HTTP 200 |
+| Backend | ✅ `:3000` 运行中（npm start pid 19824），`/api/tasks` → 24 tasks |
+| Arena Git | ✅ 干净，HEAD = `5141eba`（无 uncommitted 变更） |
+| Python Tests | ✅ 32 passed |
+| Frontend Tests | ✅ 32 passed |
+| CI | ✅ Build+Test 全绿，❌ Deploy failure（Secrets 缺失，符合预期） |
+
+**最新 CI run（2026-04-26 09:41 UTC）**：
+- SHA: `5141eba`（commit `test: fix test_task_capability_matches_category filter logic`）
+- 结果：failure（Deploy 步骤 - `CLOUDFLARE_API_TOKEN` 缺失）
+
+**Phase 4 唯一阻塞（不变，需用户手动）**：
+- GitHub Secrets `CLOUDFLARE_API_TOKEN` + `CF_ACCOUNT_ID`（值：e33179c5db6f63224f12b82f809d0f1e）
+- 配置路径：https://github.com/EASYGOING45/tenet-openclaw-arena/settings/secrets
+- Secrets 就绪后：CI Deploy 自动恢复 → 可触发全量 18-task × 3-agent benchmark
+
+**项目完成情况**：
+- ✅ TASK_v2（题库完善 + 测试增强）全部完成验收
+- ✅ Phase 4 所有功能目标完成
+- ⚠️ Phase 4 唯一未完成项：GitHub Secrets 配置（需要用户手动操作）
+
+**次级项目 datong-skill**：无新变更，CI 全绿，状态稳定
+
+**动作用时线**：
+- 09:30 开始巡检
+- 09:30 完成 site/backend/CI/Git 验证
+- 09:31 完成 PROGRESS_SUMMARY 更新（本文档）
+- 09:31 完成 memory 更新
+- 🔜 飞书进展汇报（feishu_im_user_message 受限，改为直接回复）

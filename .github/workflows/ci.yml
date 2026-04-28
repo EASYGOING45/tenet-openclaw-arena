@@ -26,7 +26,7 @@ jobs:
         run: pip install pytest --quiet
       - name: Setup Backend
         run: |
-          cd backend && npm ci
+          cd backend && npm ci && npm run build
       - name: Start Backend
         run: |
           cd backend && npm start &

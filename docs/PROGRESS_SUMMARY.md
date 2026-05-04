@@ -429,3 +429,36 @@ Secrets 就绪后：CI Deploy 自动恢复 → 可 `workflow_dispatch` 触发全
 ---
 *巡检执行者：菲比*
 *时间：2026-05-04 13:30*
+
+## 巡检记录 — 2026-05-04 傍晚巡检（17:30 CST）
+
+**项目状态：openclaw-model-arena — Phase 4 ✅ 功能完成，CI Deploy 等待 GitHub Secrets**
+
+| 检查项 | 结果 |
+|--------|------|
+| Live site | ✅ `https://aa885e68.tenet-openclaw-arena.pages.dev` HTTP 200 |
+| Backend | ✅ `:3000` 运行正常，`/api/models` → 3 agents |
+| Arena Git | ✅ `0415ee0`（ahead of origin/main by 1 commit，刚推送） |
+| CI | ✅ Build+Test 全绿，❌ Deploy failure（Secrets 缺失，符合预期） |
+
+**Phase 4 唯一阻塞（不变，需用户手动）**：
+- GitHub Secrets `CLOUDFLARE_API_TOKEN` + `CF_ACCOUNT_ID`（值：`e33179c5db6f63224f12b82f809d0f1e`）
+- 配置路径：https://github.com/EASYGOING45/tenet-openclaw-arena/settings/secrets
+- Secrets 就绪后：CI Deploy 自动恢复 → `workflow_dispatch` 触发全量 benchmark
+
+**次级项目 datong-skill**：
+- ✅ CI 全绿（v0.2.0，run #23）
+- ⏳ `publish-clawhub` 待用户确认 ClawHub 账号
+
+**无设计分歧，无范围膨胀，无新阻塞。**
+
+**动作用时线**：
+- 17:30 开始巡检
+- 17:31 完成 site/backend 验证
+- 17:32 完成 memory + PROGRESS_SUMMARY 更新
+- 17:33 推送 git commit
+- 🔜 飞书汇报
+
+---
+*巡检执行者：菲比*
+*时间：2026-05-04 17:30*

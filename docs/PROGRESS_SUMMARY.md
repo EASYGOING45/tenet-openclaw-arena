@@ -730,3 +730,27 @@ Secrets 就绪后：CI Deploy 自动恢复 → 可 `workflow_dispatch` 触发全
 ---
 *巡检执行者：菲比*
 *时间：2026-05-09 13:30*
+
+---
+## 2026-05-10 13:30 CST — 中段巡检
+
+**openclaw-model-arena — Phase 4 ✅ 功能完成，CI Deploy 等待 GitHub Secrets**
+
+| 检查项 | 结果 |
+|--------|------|
+| Live site（wrangler 直部署） | ✅ `https://aa885e68.tenet-openclaw-arena.pages.dev` HTTP 200 |
+| Backend | ✅ `:3000` 运行正常（pid 65482），24 tasks，3 models |
+| Arena Git | ✅ 干净，`77c121c`（无新变更） |
+| CI | ✅ Build+Test 全绿，❌ Deploy failure（Secrets 缺失，符合预期） |
+
+**Phase 4 阻塞（无变化，需用户手动）**：
+- GitHub Secrets `CLOUDFLARE_API_TOKEN` + `CF_ACCOUNT_ID`（值：`e33179c5db6f63224f12b82f809d0f1e`）
+- 配置路径：https://github.com/EASYGOING45/tenet-openclaw-arena/settings/secrets
+
+**需要用户拍板（Phase 4 剩余两项）**：
+1. **仓库归属**：Arena 代码当前在 workspace 子目录，是否迁移为独立 repo？
+2. **发布路径**：wrangler 直部署已上线，但 CI Deploy 仍失败；确认接受 wrangler 手动部署作为正式发布路径？
+
+**次级项目 datong-skill**：无新变更，CI 全绿（v0.2.0），publish-clawhub 待用户确认 ClawHub 账号
+
+**无设计分歧，无范围膨胀，无新阻塞。**
